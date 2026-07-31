@@ -1,133 +1,842 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FutbolinCR - Carrera de Jugador</title>
-    <link rel="stylesheet" href="static/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Fútbol 2D - Modo Carrera</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #0d0f12;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .game-container {
+      width: 100%;
+      max-width: 1050px;
+      background: #16191e;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      overflow: hidden;
+      position: relative;
+      padding: 20px;
+    }
+    /* SISTEMA DE NAVEGACIÓN (PANTALLAS) */
+    .screen {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .screen.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* BOTONES GLOBALES */
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      font-weight: bold;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+    .btn-primary { background: #10b981; color: #fff; }.btn-primary:hover { background: #059669; }  
+    .btn-secondary { background: #3b82f6; color: #fff; }.btn-secondary:hover { background: #2563eb; }  
+    .btn-danger { background: #ef4444; color: #fff; }.btn-danger:hover { background: #dc2626; }  
+    .btn-option { background: #374151; color: #fff; }
+    .btn-option:hover { background: #4b5563; }
+    /* 1. MENÚ PRINCIPAL */
+    .menu-card {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .menu-card h1 {
+      font-size: 3rem;
+      color: #10b981;
+      letter-spacing: 2px;
+    }
+    .subtitle {
+      color: #9ca3af;
+      margin-bottom: 30px;
+    }
+    .menu-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    /* 2. CREACIÓN DE JUGADOR (DEFINÍ TU IDENTIDAD) */
+    .creation-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .creation-header h2 {
+      font-size: 2rem;
+      color: #fff;
+    }
+    .creation-container {
+      display: flex;
+      gap: 20px;
+      background: #111317;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #2a2e37;
+    }
+    .creation-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .creation-column h3 {
+      font-size: 1.1rem;
+      color: #10b981;
+      border-bottom: 2px solid #2a2e37;
+      padding-bottom: 5px;
+    }
+    #country-search {
+      width: 100%;
+      padding: 10px;
+      background: #1e222a;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      color: white;
+    }
+    .country-list-box {
+      max-height: 280px;
+      overflow-y: auto;
+      background: #191c23;
+      border: 1px solid #2a2e37;
+      border-radius: 6px;
+    }
+    .country-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #222630;
+      transition: background 0.2s;
+    }
+    .country-item:hover, .country-item.selected {
+      background: #2a303c;
+    }
+    .country-color-preview {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid #fff;
+    }
+    /* Jersey Preview */
+    .jersey-card {
+      background: #191c23;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #2a2e37;
+    }
+    .jersey-icon {
+      width: 80px;
+      height: 90px;
+      margin: 0 auto 10px;
+      background: #75aadb;
+      border-radius: 10px 10px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: bold;
+      color: white;
+      border: 2px solid #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-group label {
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+    .form-group input {
+      padding: 8px;
+      background: #1e222a;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      color: white;
+    }
+    .toggle-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-foot {
+      flex: 1;
+      background: #1e222a;
+      color: #aaa;
+      border: 1px solid #374151;
+    }
+    .btn-foot.active {
+      background: #10b981;
+      color: white;
+      border-color: #10b981;
+    }
+    /* Mini Pitch Selector */
+    .mini-pitch {
+      background: #1e5323;
+      height: 280px;
+      border: 2px solid #ffffff;
+      border-radius: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: space-around;
+      justify-content: center;
+      padding: 10px;
+    }
+    .pos-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid white;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      font-weight: bold;
+      font-size: 11px;
+      cursor: pointer;
+      margin: 3px;
+      padding: 0;
+    }
+    .pos-btn.active {
+      background: #f59e0b;
+      color: black;
+      border-color: #fff;
+    }
+    .creation-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    /* 3. HUB DE CARRERA Y HEADER DE JUGADOR */
+    .player-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: #1f242d;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .badge-ovr {
+      width: 50px;
+      height: 50px;
+      background: #f59e0b;
+      color: #000;
+      font-size: 22px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+    .player-info { flex: 1; }
+    .player-stats { display: flex; gap: 15px; font-size: 14px; }
+    .player-stats b { color: #10b981; }
+    .hub-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    /* 4. CANCHA 2D & PARTIDO */
+    .match-section {
+      text-align: center;
+    }
+    .scoreboard {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: #1f242d;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    #footballPitch {
+      background: #2e7d32;
+      border: 3px solid #fff;
+      border-radius: 4px;
+      max-width: 100%;
+      height: auto;
+    }
+    /* MODALES */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    .modal-content {
+      background: #1f242d;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    .coin-container {
+      perspective: 1000px;
+      margin: 20px auto;
+      width: 80px; height: 80px;
+    }
+    .coin {
+      width: 100%; height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 2s ease-out;
+    }
+    .coin-face {
+      position: absolute;
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      backface-visibility: hidden;
+      border: 2px solid #fff;
+    }
+    .coin-front { background: #ef4444; color: white; }
+    .coin-back { background: #3b82f6; color: white; transform: rotateY(180deg); }
+  </style>
 </head>
 <body>
 
-    <div class="game-container">
-
-        <!-- ================= 1. MENÚ PRINCIPAL ================= -->
-        <section id="screen-main-menu" class="screen active">
-            <div class="menu-card">
-                <h1>FUTBOLIN CR</h1>
-                <p class="subtitle">Modo Carrera & Simulación Dinámica</p>
-                <div class="menu-buttons">
-                    <button id="btn-career-mode" class="btn-primary">🎮 MODO CARRERA</button>
-                    <button id="btn-quick-match" class="btn-secondary">⚽ PARTIDO RÁPIDO</button>
-                    <button id="btn-reset-data" class="btn-danger">🗑️ REINICIAR DATOS</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= 2. DASHBOARD / HUB DE CARRERA ================= -->
-        <section id="screen-hub" class="screen">
-            <header class="player-header">
-                <div class="badge-ovr" id="player-ovr">50</div>
-                <div class="player-info">
-                    <h2 id="player-name">Tu Nombre</h2>
-                    <p id="player-club">Escorpiones de Belén | 16 años</p>
-                </div>
-                <div class="player-stats">
-                    <span>PJ: <b id="stat-pj">0</b></span>
-                    <span>GLS: <b id="stat-gls">0</b></span>
-                    <span>AST: <b id="stat-ast">0</b></span>
-                </div>
-            </header>
-
-            <main class="main-content">
-                <section class="decisions-section">
-                    <h3>Panel de Control del Jugador</h3>
-                    <p id="decision-text">Gestioná tu carrera profesional y preparate para el siguiente partido.</p>
-                    
-                    <div class="hub-actions-grid">
-                        <button id="btn-prepare-match" class="btn-primary">⚽ Ir al Siguiente Partido</button>
-                        <button id="btn-save-game" class="btn-option">💾 Guardar Partida</button>
-                        <button id="btn-back-to-menu" class="btn-secondary">🚪 Menú Principal</button>
-                    </div>
-                </section>
-            </main>
-        </section>
-
-        <!-- ================= 3. TRANSICIÓN PRE-PARTIDO ================= -->
-        <section id="screen-pre-match" class="screen">
-            <div class="modal-content preview-card">
-                <h2>Previa del Encuentro</h2>
-                <div class="match-preview-teams">
-                    <div class="team-box home-box">LOCAL</div>
-                    <div class="vs-badge">VS</div>
-                    <div class="team-box away-box">VISITANTE</div>
-                </div>
-                <p>¿Estás listo para salir a la cancha?</p>
-                <div class="options-grid">
-                    <button id="btn-start-sim" class="btn-primary">🔥 ¡Comenzar Partido!</button>
-                    <button id="btn-cancel-match" class="btn-secondary">⬅️ Volver al Hub</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= 4. PANTALLA DE JUEGO (CANCHA 2D) ================= -->
-        <section id="screen-game" class="screen">
-            <header class="player-header">
-                <div class="badge-ovr" id="game-player-ovr">50</div>
-                <div class="player-info">
-                    <h2 id="game-player-name">Tu Nombre</h2>
-                    <p id="game-player-club">Escorpiones de Belén</p>
-                </div>
-            </header>
-
-            <div class="match-section">
-                <h3>Cancha 2D - En Vivo</h3>
-                
-                <div class="scoreboard">
-                    <div class="team-score" id="team-home">LOCAL: <span>0</span></div>
-                    <div class="match-timer" id="match-timer">02:00</div>
-                    <div class="team-score" id="team-away">VISITANTE: <span>0</span></div>
-                </div>
-
-                <canvas id="footballPitch" width="900" height="550"></canvas>
-                
-                <div class="match-controls">
-                    <button id="btn-start-match">¡Iniciar Saque!</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= 5. TRANSICIÓN POST-PARTIDO ================= -->
-        <section id="screen-post-match" class="screen">
-            <div class="modal-content post-card">
-                <h2>¡Final del Partido!</h2>
-                <div class="final-score-display">
-                    <span id="post-score-home">0</span> - <span id="post-score-away">0</span>
-                </div>
-                <p id="post-match-summary">Gran desempeño en la cancha.</p>
-                <button id="btn-finish-match" class="btn-primary">Regresar al Hub 🏠</button>
-            </div>
-        </section>
-
-    </div>
-
-    <!-- Modal de Saque Inicial -->
-    <div id="coin-toss-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h2>Sorteo de Saque Inicial</h2>
-            
-            <div class="coin-container">
-                <div id="coin" class="coin">
-                    <div class="coin-face coin-front">LOCAL</div>
-                    <div class="coin-face coin-back">VISITANTE</div>
-                </div>
-            </div>
-            
-            <h3 id="toss-result">Presioná el botón para sortear el saque</h3>
-            
-            <button id="btn-spin-coin">Click para girar la moneda</button>
+  <div class="game-container">
+    
+    <!-- 1. MENÚ PRINCIPAL -->
+    <div id="screen-menu" class="screen active">
+      <div class="menu-card">
+        <h1>FOOTBALL SIM 2D</h1>
+        <p class="subtitle">Modo Carrera - Leyenda en Construcción</p>
+        <div class="menu-buttons">
+          <button class="btn-primary" onclick="showScreen('screen-creation')">Nueva Carrera</button>
+          <button class="btn-secondary" onclick="loadGame()">Cargar Carrera</button>
         </div>
+      </div>
     </div>
 
-    <script src="static/js/script.js"></script>
+    <!-- 2. CREACIÓN DE JUGADOR -->
+    <div id="screen-creation" class="screen">
+      <div class="creation-header">
+        <h2>Definí tu Identidad</h2>
+      </div>
+      <div class="creation-container">
+        
+        <!-- Columna 1: País -->
+        <div class="creation-column">
+          <h3>Nacionalidad</h3>
+          <input type="text" id="country-search" placeholder="Buscar país..." oninput="filterCountries()">
+          <div class="country-list-box" id="country-list">
+            <!-- Inyectado por JS -->
+          </div>
+        </div>
+
+        <!-- Columna 2: Detalles Personales -->
+        <div class="creation-column">
+          <h3>Jugador</h3>
+          <div class="jersey-card">
+            <div class="jersey-icon" id="jersey-preview">10</div>
+            <p id="country-preview-name" style="font-size: 0.9rem; color: #aaa;">Argentina</p>
+          </div>
+          <div class="form-group">
+            <label>Nombre del Jugador</label>
+            <input type="text" id="player-name" value="Mi Jugador">
+          </div>
+          <div class="form-group">
+            <label>Dorsal</label>
+            <input type="number" id="player-number" value="10" min="1" max="99" oninput="updateJersey()">
+          </div>
+          <div class="form-group">
+            <label>Pie Hábil</label>
+            <div class="toggle-buttons">
+              <button class="btn-foot active" onclick="setFoot('Derecho', this)">Derecho</button>
+              <button class="btn-foot" onclick="setFoot('Izquierdo', this)">Izquierdo</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna 3: Posición -->
+        <div class="creation-column">
+          <h3>Posición Principal</h3>
+          <div class="mini-pitch">
+            <button class="pos-btn" onclick="setPosition('PO', this)">PO</button>
+            <button class="pos-btn" onclick="setPosition('DFC', this)">DFC</button>
+            <button class="pos-btn" onclick="setPosition('LI', this)">LI</button>
+            <button class="pos-btn" onclick="setPosition('LD', this)">LD</button>
+            <button class="pos-btn" onclick="setPosition('MCD', this)">MCD</button>
+            <button class="pos-btn" onclick="setPosition('MC', this)">MC</button>
+
+            <button class="pos-btn" onclick="setPosition('MCO', this)">MCO</button>
+            <button class="pos-btn" onclick="setPosition('EI', this)">EI</button>
+            <button class="pos-btn" onclick="setPosition('ED', this)">ED</button>
+            <button class="pos-btn active" onclick="setPosition('DC', this)">DC</button>
+          </div>
+        </div>
+
+      </div>
+      <div class="creation-actions">
+        <button class="btn-option" onclick="showScreen('screen-menu')">Volver</button>
+        <button class="btn-primary" onclick="confirmCreation()">Iniciar Carrera</button>
+      </div>
+    </div>
+
+    <!-- 3. HUB DE CARRERA -->
+    <div id="screen-hub" class="screen">
+      <div class="player-header">
+        <div class="badge-ovr" id="hub-ovr">65</div>
+        <div class="player-info">
+          <h2 id="hub-name">Mi Jugador</h2>
+          <p id="hub-details" style="color: #aaa; font-size: 0.9rem;">DC | Argentina | Pie: Derecho</p>
+        </div>
+        <div class="player-stats">
+          <span>Partidos: <b id="stat-pj">0</b></span>
+          <span>Goles: <b id="stat-goles">0</b></span>
+          <span>Asistencias: <b id="stat-asist">0</b></span>
+        </div>
+      </div>
+
+      <div class="hub-actions-grid">
+        <button class="btn-primary" onclick="startMatchSequence()">Jugar Siguiente Partido</button>
+        <button class="btn-secondary" onclick="alert('Próximamente: Entrenamiento de Stats')">Entrenamiento</button>
+        <button class="btn-danger" onclick="showScreen('screen-menu')">Salir al Menú</button>
+      </div>
+    </div>
+
+    <!-- 4. PANTALLA DE PARTIDO -->
+    <div id="screen-match" class="screen">
+      <div class="match-section">
+        <div class="scoreboard">
+          <span id="match-team1">LOCAL</span>
+          <span id="match-score">0 - 0</span>
+          <span id="match-team2">VISITANTE</span>
+          <span id="match-timer" style="color: #f59e0b;">00:00</span>
+        </div>
+        <canvas id="footballPitch" width="800" height="500"></canvas>
+        <div style="margin-top: 15px;">
+          <button class="btn-danger" onclick="abortMatch()">Abandonar Partido</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL SORTEO MONEDA (SAQUE INICIAL) -->
+  <div id="coin-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Sorteo de Saque Inicial</h3>
+      <div class="coin-container">
+        <div class="coin" id="coin-element">
+          <div class="coin-face coin-front">LOCAL</div>
+          <div class="coin-face coin-back">VISIT</div>
+        </div>
+      </div>
+      <p id="coin-result-text">Lanzando moneda...</p>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // ESTADO GLOBAL DE JUEGO & JUGADOR
+    // ==========================================
+    let playerData = {
+      name: "Mi Jugador",
+      number: 10,
+      country: "Argentina",
+      color: "#75aadb",
+      foot: "Derecho",
+      position: "DC",
+      ovr: 65,
+      pj: 0, goles: 0, asist: 0
+    };
+
+    const countries = [
+      { name: "Argentina", color: "#75aadb" },
+      { name: "Brasil", color: "#facc15" },
+      { name: "España", color: "#ef4444" },
+      { name: "Francia", color: "#3b82f6" },
+      { name: "Alemania", color: "#ffffff" },
+      { name: "Italia", color: "#1d4ed8" },
+      { name: "Uruguay", color: "#38bdf8" },
+      { name: "Inglaterra", color: "#f87171" }
+    ];
+
+    // Variables de Control del Partido
+    let isMatchRunning = false;
+    let animFrameId = null;
+    let goalTimeoutId = null;
+    let matchIntervalId = null;
+    let timeRemaining = 90;
+    let matchScore = { home: 0, away: 0 };
+
+    const canvas = document.getElementById('footballPitch');
+    const ctx = canvas.getContext('2d');
+
+    const ball = { x: 400, y: 250, vx: 0, vy: 0, radius: 5, friction: 0.98 };
+    let matchPlayers = [];
+
+    // ==========================================
+    // NAVEGACIÓN DE PANTALLAS
+    // ==========================================
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    // ==========================================
+    // LÓGICA DE CREACIÓN DE JUGADOR
+    // ==========================================
+    function initCreationScreen() {
+      const list = document.getElementById('country-list');
+      list.innerHTML = '';
+      countries.forEach((c, idx) => {
+        const item = document.createElement('div');
+        item.className = `country-item ${idx === 0 ? 'selected' : ''}`;
+        item.onclick = () => selectCountry(c, item);
+        item.innerHTML = `
+          <div class="country-color-preview" style="background: ${c.color}"></div>
+          <span>${c.name}</span>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function selectCountry(country, element) {
+      document.querySelectorAll('.country-item').forEach(i => i.classList.remove('selected'));
+      element.classList.add('selected');
+      playerData.country = country.name;
+      playerData.color = country.color;
+      document.getElementById('jersey-preview').style.background = country.color;
+      document.getElementById('country-preview-name').innerText = country.name;
+    }
+
+    function filterCountries() {
+      const q = document.getElementById('country-search').value.toLowerCase();
+      document.querySelectorAll('.country-item').forEach(item => {
+        const text = item.innerText.toLowerCase();
+        item.style.display = text.includes(q) ? 'flex' : 'none';
+      });
+    }
+
+    function updateJersey() {
+      const num = document.getElementById('player-number').value;
+      playerData.number = num;
+      document.getElementById('jersey-preview').innerText = num;
+    }
+
+    function setFoot(foot, btn) {
+      document.querySelectorAll('.btn-foot').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      playerData.foot = foot;
+    }
+
+    function setPosition(pos, btn) {
+      document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      playerData.position = pos;
+    }
+
+    function confirmCreation() {
+      playerData.name = document.getElementById('player-name').value || "Mi Jugador";
+      saveGame();
+      updateHubUI();
+      showScreen('screen-hub');
+    }
+
+    function updateHubUI() {
+      document.getElementById('hub-name').innerText = playerData.name;
+      document.getElementById('hub-ovr').innerText = playerData.ovr;
+      document.getElementById('hub-details').innerText = `${playerData.position} | ${playerData.country} | Pie: ${playerData.foot}`;
+      document.getElementById('stat-pj').innerText = playerData.pj;
+      document.getElementById('stat-goles').innerText = playerData.goles;
+      document.getElementById('stat-asist').innerText = playerData.asist;
+    }
+
+    function saveGame() {
+      localStorage.setItem('careerPlayerData', JSON.stringify(playerData));
+    }
+
+    function loadGame() {
+      const saved = localStorage.getItem('careerPlayerData');
+      if (saved) {
+        playerData = JSON.parse(saved);
+        updateHubUI();
+        showScreen('screen-hub');
+      } else {
+        alert("No hay partidas guardadas.");
+      }
+    }
+
+    // ==========================================
+    // SORTEO DE MONEDA & PREPARACIÓN DE PARTIDO
+    // ==========================================
+    function startMatchSequence() {
+      showScreen('screen-match');
+      const modal = document.getElementById('coin-modal');
+      const coin = document.getElementById('coin-element');
+      const resultText = document.getElementById('coin-result-text');
+
+      modal.style.display = 'flex';
+      resultText.innerText = "Lanzando moneda...";
+      
+      const isHome = Math.random() > 0.5;
+      const deg = isHome ? 1800 : 1980;
+
+      setTimeout(() => {
+        coin.style.transform = `rotateY(${deg}deg)`;
+      }, 100);
+
+      setTimeout(() => {
+        resultText.innerText = isHome ? "¡Saca el Equipo Local!" : "¡Saca el Equipo Visitante!";
+        setTimeout(() => {
+          modal.style.display = 'none';
+          coin.style.transform = 'rotateY(0deg)';
+          initMatch(isHome ? 'home' : 'away');
+        }, 1200);
+      }, 2100);
+    }
+
+    // ==========================================
+    // MOTOR DE PARTIDO (CORREGIDO)
+    // ==========================================
+    function initMatch(kickoffTeam) {
+      isMatchRunning = true;
+      timeRemaining = 90;
+      matchScore = { home: 0, away: 0 };
+      
+      // Inicializar plantilla
+      matchPlayers = [
+        { id: 1, team: 'home', role: 'PO', x: 50, y: 250, vx: 0, vy: 0, radius: 10, speed: 2, stunnedTimer: 0, immuneTimer: 0 },
+        { id: 2, team: 'home', role: 'DEL', x: 380, y: 250, vx: 0, vy: 0, radius: 10, speed: 2.5, stunnedTimer: 0, immuneTimer: 0 },
+        { id: 3, team: 'away', role: 'PO', x: 750, y: 250, vx: 0, vy: 0, radius: 10, speed: 2, stunnedTimer: 0, immuneTimer: 0 },
+        { id: 4, team: 'away', role: 'DEL', x: 420, y: 250, vx: 0, vy: 0, radius: 10, speed: 2.5, stunnedTimer: 0, immuneTimer: 0 }
+      ];
+
+      resetPositionsForKickoff(kickoffTeam);
+
+      if (matchIntervalId) clearInterval(matchIntervalId);
+      matchIntervalId = setInterval(updateMatchTimer, 1000);
+
+      updateMatch();
+    }
+
+    function updateMatchTimer() {
+      if (!isMatchRunning) return;
+      timeRemaining--;
+      document.getElementById('match-timer').innerText = formatTime(timeRemaining);
+
+      if (timeRemaining <= 0) {
+        finishMatch();
+      }
+    }
+
+    function updateMatch() {
+      if (!isMatchRunning) return;
+
+      updatePhysics();
+      updateAI();
+      checkCollisions();
+      renderMatch();
+
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      animFrameId = requestAnimationFrame(updateMatch);
+    }
+
+    function updatePhysics() {
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+      ball.vx *= ball.friction;
+      ball.vy *= ball.friction;
+
+      if (ball.y - ball.radius <= 0 || ball.y + ball.radius >= canvas.height) {
+        ball.vy *= -1;
+      }
+
+      // Líneas de meta y detección de gol
+      if (ball.x - ball.radius <= 0) {
+        if (ball.y > 180 && ball.y < 320) registerGoal('away');
+        else ball.vx *= -1;
+      } else if (ball.x + ball.radius >= canvas.width) {
+        if (ball.y > 180 && ball.y < 320) registerGoal('home');
+        else ball.vx *= -1;
+      }
+    }
+
+    function updateAI() {
+      matchPlayers.forEach(p => {
+        if (p.role === 'PO') {
+          if (p.stunnedTimer > 0) {
+            p.stunnedTimer--;
+            return;
+          }
+          if (p.immuneTimer > 0) p.immuneTimer--;
+        }
+
+        let dx = ball.x - p.x;
+        let dy = ball.y - p.y;
+        let dist = Math.hypot(dx, dy);
+
+        if (dist > 5) {
+          p.x += (dx / dist) * p.speed * 0.5;
+          p.y += (dy / dist) * p.speed * 0.5;
+        }
+      });
+    }
+
+    function checkCollisions() {
+      matchPlayers.forEach(p => {
+        let dx = ball.x - p.x;
+        let dy = ball.y - p.y;
+        let dist = Math.hypot(dx, dy);
+
+        if (dist < p.radius + ball.radius) {
+          const ballSpeed = Math.hypot(ball.vx, ball.vy);
+
+          if (p.role === 'PO' && ballSpeed > 3.0 && !p.stunnedTimer && !p.immuneTimer) {
+            p.stunnedTimer = 90;
+            p.immuneTimer = 180;
+          }
+
+          let angle = Math.atan2(dy, dx);
+          let power = 5;
+          ball.vx = Math.cos(angle) * power;
+          ball.vy = Math.sin(angle) * power;
+        }
+      });
+    }
+
+    function registerGoal(team) {
+      matchScore[team]++;
+      document.getElementById('match-score').innerText = `${matchScore.home} - ${matchScore.away}`;
+      resetAfterGoal(team);
+    }
+
+    function resetAfterGoal(scoringTeam) {
+      resetPositionsForKickoff(scoringTeam);
+
+      if (goalTimeoutId) clearTimeout(goalTimeoutId);
+      
+      goalTimeoutId = setTimeout(() => {
+        if (isMatchRunning) {
+          ball.vx = (Math.random() - 0.5) * 4;
+          ball.vy = (Math.random() - 0.5) * 4;
+        }
+      }, 1200);
+    }
+
+    function resetPositionsForKickoff(team) {
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+      ball.vx = 0;
+      ball.vy = 0;
+
+      matchPlayers[0].x = 50;  matchPlayers[0].y = 250;
+      matchPlayers[1].x = 380; matchPlayers[1].y = 250;
+      matchPlayers[2].x = 750; matchPlayers[2].y = 250;
+      matchPlayers[3].x = 420; matchPlayers[3].y = 250;
+    }
+
+    function finishMatch() {
+      isMatchRunning = false;
+      clearInterval(matchIntervalId);
+
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      if (goalTimeoutId) clearTimeout(goalTimeoutId);
+
+      playerData.pj++;
+      saveGame();
+      updateHubUI();
+
+      alert(`Fin del Partido!\nResultado: ${matchScore.home} - ${matchScore.away}`);
+      showScreen('screen-hub');
+    }
+
+    function abortMatch() {
+      if (confirm("¿Seguro que deseas abandonar el partido?")) {
+        isMatchRunning = false;
+        clearInterval(matchIntervalId);
+        if (animFrameId) cancelAnimationFrame(animFrameId);
+        if (goalTimeoutId) clearTimeout(goalTimeoutId);
+        showScreen('screen-hub');
+      }
+    }
+
+    function formatTime(seconds) {
+      let mins = Math.floor(seconds / 60);
+      let secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function renderMatch() {
+      ctx.fillStyle = '#2e7d32';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+
+      // Línea del medio y círculo central
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2, 0);
+      ctx.lineTo(canvas.width / 2, canvas.height);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, 50, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Porterías
+      ctx.strokeRect(0, 180, 20, 140);
+      ctx.strokeRect(canvas.width - 20, 180, 20, 140);
+
+      // Renderizar Jugadores
+      matchPlayers.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        
+        if (p.stunnedTimer > 0) ctx.fillStyle = '#f59e0b';
+        else ctx.fillStyle = (p.team === 'home') ? playerData.color : '#ef4444';
+        
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+      });
+
+      // Renderizar Balón
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.strokeStyle = '#000000';
+      ctx.stroke();
+    }
+
+    // Inicializar lista al cargar página
+    initCreationScreen();
+  </script>
 </body>
 </html>
