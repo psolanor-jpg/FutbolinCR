@@ -4,29 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FutbolinCR - Carrera de Jugador</title>
-    <!-- Ruta corregida para CSS estático -->
     <link rel="stylesheet" href="static/css/style.css">
 </head>
 <body>
 
     <div class="game-container">
-        <header class="player-header">
-            <div class="badge-ovr" id="player-ovr">50</div>
-            <div class="player-info">
-                <h2 id="player-name">Tu Nombre</h2>
-                <p id="player-club">Escorpiones de Belén | 16 años</p>
-            </div>
-            <div class="player-stats">
-                <span>PJ: <b id="stat-pj">0</b></span>
-                <span>GLS: <b id="stat-gls">0</b></span>
-                <span>AST: <b id="stat-ast">0</b></span>
-            </div>
-        </header>
 
-        <main class="main-content">
-            
-            <section class="match-section">
-                <h3>Cancha 2D - Partido Importante</h3>
+        <!-- ================= 1. MENÚ PRINCIPAL ================= -->
+        <section id="screen-main-menu" class="screen active">
+            <div class="menu-card">
+                <h1>FUTBOLIN CR</h1>
+                <p class="subtitle">Modo Carrera & Simulación Dinámica</p>
+                <div class="menu-buttons">
+                    <button id="btn-career-mode" class="btn-primary">🎮 MODO CARRERA</button>
+                    <button id="btn-quick-match" class="btn-secondary">⚽ PARTIDO RÁPIDO</button>
+                    <button id="btn-reset-data" class="btn-danger">🗑️ REINICIAR DATOS</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 2. DASHBOARD / HUB DE CARRERA ================= -->
+        <section id="screen-hub" class="screen">
+            <header class="player-header">
+                <div class="badge-ovr" id="player-ovr">50</div>
+                <div class="player-info">
+                    <h2 id="player-name">Tu Nombre</h2>
+                    <p id="player-club">Escorpiones de Belén | 16 años</p>
+                </div>
+                <div class="player-stats">
+                    <span>PJ: <b id="stat-pj">0</b></span>
+                    <span>GLS: <b id="stat-gls">0</b></span>
+                    <span>AST: <b id="stat-ast">0</b></span>
+                </div>
+            </header>
+
+            <main class="main-content">
+                <section class="decisions-section">
+                    <h3>Panel de Control del Jugador</h3>
+                    <p id="decision-text">Gestioná tu carrera profesional y preparate para el siguiente partido.</p>
+                    
+                    <div class="hub-actions-grid">
+                        <button id="btn-prepare-match" class="btn-primary">⚽ Ir al Siguiente Partido</button>
+                        <button id="btn-save-game" class="btn-option">💾 Guardar Partida</button>
+                        <button id="btn-back-to-menu" class="btn-secondary">🚪 Menú Principal</button>
+                    </div>
+                </section>
+            </main>
+        </section>
+
+        <!-- ================= 3. TRANSICIÓN PRE-PARTIDO ================= -->
+        <section id="screen-pre-match" class="screen">
+            <div class="modal-content preview-card">
+                <h2>Previa del Encuentro</h2>
+                <div class="match-preview-teams">
+                    <div class="team-box home-box">LOCAL</div>
+                    <div class="vs-badge">VS</div>
+                    <div class="team-box away-box">VISITANTE</div>
+                </div>
+                <p>¿Estás listo para salir a la cancha?</p>
+                <div class="options-grid">
+                    <button id="btn-start-sim" class="btn-primary">🔥 ¡Comenzar Partido!</button>
+                    <button id="btn-cancel-match" class="btn-secondary">⬅️ Volver al Hub</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 4. PANTALLA DE JUEGO (CANCHA 2D) ================= -->
+        <section id="screen-game" class="screen">
+            <header class="player-header">
+                <div class="badge-ovr" id="game-player-ovr">50</div>
+                <div class="player-info">
+                    <h2 id="game-player-name">Tu Nombre</h2>
+                    <p id="game-player-club">Escorpiones de Belén</p>
+                </div>
+            </header>
+
+            <div class="match-section">
+                <h3>Cancha 2D - En Vivo</h3>
                 
                 <div class="scoreboard">
                     <div class="team-score" id="team-home">LOCAL: <span>0</span></div>
@@ -37,20 +91,23 @@
                 <canvas id="footballPitch" width="900" height="550"></canvas>
                 
                 <div class="match-controls">
-                    <button id="btn-start-match">¡Jugar Partido Visual!</button>
+                    <button id="btn-start-match">¡Iniciar Saque!</button>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section class="decisions-section">
-                <h3>Decisiones de Carrera</h3>
-                <p id="decision-text">Bienvenido a FutbolinCR. ¿Estás listo para iniciar tu carrera profesional?</p>
-                
-                <div class="options-grid" id="options-container">
-                    <button class="btn-option" onclick="tomarDecision(1)">Aceptar desafío</button>
+        <!-- ================= 5. TRANSICIÓN POST-PARTIDO ================= -->
+        <section id="screen-post-match" class="screen">
+            <div class="modal-content post-card">
+                <h2>¡Final del Partido!</h2>
+                <div class="final-score-display">
+                    <span id="post-score-home">0</span> - <span id="post-score-away">0</span>
                 </div>
-            </section>
+                <p id="post-match-summary">Gran desempeño en la cancha.</p>
+                <button id="btn-finish-match" class="btn-primary">Regresar al Hub 🏠</button>
+            </div>
+        </section>
 
-        </main>
     </div>
 
     <!-- Modal de Saque Inicial -->
@@ -71,8 +128,6 @@
         </div>
     </div>
 
-    <!-- Ruta corregida para JS estático -->
     <script src="static/js/script.js"></script>
-
 </body>
 </html>

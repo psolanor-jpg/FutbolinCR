@@ -1,3 +1,69 @@
+let careerData = {
+    matchesPlayed: 0,
+    wins: 0,
+    draws: 0,
+    losses: 0,
+    goalsScored: 0,
+    goalsConceded: 0
+};
+
+function loadCareerData() {
+    const saved = localStorage.getItem('careerData');
+    if (saved) {
+        careerData = JSON.parse(saved);
+    }
+    updateCareerUI();
+}
+
+function saveCareerData() {
+    localStorage.setItem('careerData', JSON.stringify(careerData));
+    updateCareerUI();
+}
+
+function updateCareerUI() {
+    const matchesEl = document.getElementById('stat-matches');
+    const recordEl = document.getElementById('stat-record');
+    const goalsEl = document.getElementById('stat-goals');
+
+    if (matchesEl) matchesEl.innerText = careerData.matchesPlayed;
+    if (recordEl) recordEl.innerText = `${careerData.wins}G - ${careerData.draws}E - ${careerData.losses}P`;
+    if (goalsEl) goalsEl.innerText = `${careerData.goalsScored}:${careerData.goalsConceded}`;
+}
+
+
+function showView(viewId) {
+    const views = document.querySelectorAll('.view');
+    views.forEach(v => v.classList.remove('active'));
+    
+    const target = document.getElementById(viewId);
+    if (target) {
+        target.classList.add('active');
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadCareerData();
+
+    const btnStartCareer = document.getElementById('btn-start-career');
+    const btnGoMatch = document.getElementById('btn-go-match');
+    const btnBackHub = document.getElementById('btn-back-hub');
+    const btnExitCareer = document.getElementById('btn-exit-career');
+
+    if (btnStartCareer) btnStartCareer.addEventListener('click', () => showView('career-hub-view'));
+    if (btnGoMatch) btnGoMatch.addEventListener('click', () => showView('match-preview-view'));
+    if (btnBackHub) btnBackHub.addEventListener('click', () => showView('career-hub-view'));
+    if (btnExitCareer) btnExitCareer.addEventListener('click', () => showView('main-menu-view'));
+    
+
+    initPlayers();
+    drawPitch();
+    drawPlayers();
+    drawBall();
+});
+
+
+
 const canvas = document.getElementById('footballPitch');
 const ctx = canvas.getContext('2d');
 
@@ -9,7 +75,7 @@ let scoreAway = 0;
 let timeRemaining = 120;
 let timerInterval = null;
 
-let teamPassCount = 0; // Contador de pases seguidos del equipo poseedor
+let teamPassCount = 0; 
 
 let ball = { 
     x: 450, y: 275, 
@@ -297,12 +363,14 @@ function checkGoals() {
 
     if (ball.x <= 15 && isGoalHeight) {
         scoreAway++;
-        document.querySelector('#team-away span').innerText = scoreAway;
+        const awayScoreEl = document.querySelector('#team-away span');
+        if (awayScoreEl) awayScoreEl.innerText = scoreAway;
         resetAfterGoal();
     } 
     else if (ball.x >= canvas.width - 15 && isGoalHeight) {
         scoreHome++;
-        document.querySelector('#team-home span').innerText = scoreHome;
+        const homeScoreEl = document.querySelector('#team-home span');
+        if (homeScoreEl) homeScoreEl.innerText = scoreHome;
         resetAfterGoal();
     }
 }
@@ -325,7 +393,6 @@ function updateAI() {
             p.stunnedTimer--;
         }
 
-        // Control de estamina
         if (p.energy <= 0) p.isExhausted = true;
         if (p.isExhausted) {
             p.energy += 0.08;
@@ -340,7 +407,6 @@ function updateAI() {
             ? p.baseSpeed * 0.25 
             : (p.isExhausted ? p.baseSpeed * 0.45 : p.baseSpeed * (0.65 + staminaRatio * 0.35));
 
-        // Captura del balón
         let catchRadius = (p.role === 'PO' ? p.radius + 1 : p.radius + ball.radius + 2);
         if (distToBall < catchRadius && !ball.holder && ball.passCooldown === 0) {
             if (p.role === 'PO' && Math.hypot(ball.vx, ball.vy) > 3.0) {
@@ -356,7 +422,6 @@ function updateAI() {
             ball.curveY = 0;
         }
 
-        // Marca y barridas
         if (ball.holder && ball.holder !== p && p.team !== ball.holder.team) {
             let holder = ball.holder;
             let distToHolder = Math.hypot(holder.x - p.x, holder.y - p.y);
@@ -390,7 +455,6 @@ function updateAI() {
             }
         }
 
-        // POSEEDOR DEL BALÓN
         if (ball.holder === p) {
             if (!p.isExhausted) p.energy = Math.max(0, p.energy - 0.08);
             holdTimer++;
@@ -494,7 +558,6 @@ function updateAI() {
                 }
             }
         } 
-        // JUGADOR RECORRIENDO O PERSEGUIDOR
         else if (isChaser && !ball.holder) {
             if (!p.isExhausted) p.energy = Math.max(0, p.energy - 0.05);
 
@@ -505,11 +568,9 @@ function updateAI() {
                 p.y += (dy / dist) * (currentSpeed * 1.25);
             }
         } 
-        // POSICIONAMIENTO DINÁMICO Y DESMARQUE INDEPENDIENTE
         else {
             p.decisionTimer++;
 
-            // Frecuencia de decisión desfasada (para que no se muevan al mismo tiempo)
             let decisionThreshold = 12 + (index % 7) * 4; 
 
             if (p.decisionTimer > decisionThreshold) {
@@ -521,12 +582,10 @@ function updateAI() {
                 let zoneX = p.baseX;
                 let zoneY = p.baseY;
 
-                // Comportamiento por Sectores / Campos Divididos
                 if (isMyTeamInPossession) {
                     let advance = p.team === 'home' ? 140 : -140;
                     zoneX += advance;
 
-                    // Rotación/Desmarque: Si la pelota viene por su carril Y, abrirse o cruzarse
                     if (Math.abs(ball.y - p.baseY) < 60) {
                         zoneY += (p.number % 2 === 0 ? 45 : -45);
                     }
@@ -538,7 +597,6 @@ function updateAI() {
                     zoneX += (p.team === 'home' ? 40 : -40);
                 }
 
-                // Evitar que compañeros del mismo rol se solapen en Y
                 let sameTeamPlayers = players.filter(other => other.team === p.team && other !== p && other.role === p.role);
                 sameTeamPlayers.forEach(other => {
                     if (Math.abs(other.targetY - zoneY) < 30) {
@@ -546,7 +604,6 @@ function updateAI() {
                     }
                 });
 
-                // Offset de movimiento orgánico individual
                 p.personalOffsetX = (Math.sin(Date.now() * 0.003 + index) * 20);
                 p.personalOffsetY = (Math.cos(Date.now() * 0.003 + index) * 20);
 
@@ -554,7 +611,6 @@ function updateAI() {
                 p.targetY = Math.max(35, Math.min(canvas.height - 35, zoneY + p.personalOffsetY));
             }
 
-            // Suavizado del movimiento
             let dx = p.targetX - p.x;
             let dy = p.targetY - p.y;
             let dist = Math.hypot(dx, dy);
@@ -568,7 +624,6 @@ function updateAI() {
         }
     });
 
-    // FÍSICA DEL BALÓN
     if (!ball.holder) {
         ball.x += ball.vx;
         ball.y += ball.vy;
@@ -616,16 +671,35 @@ function updateTimer() {
 
     let minutes = Math.floor(timeRemaining / 60);
     let seconds = timeRemaining % 60;
-    document.getElementById('match-timer').innerText = 
-        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    const timerEl = document.getElementById('match-timer');
+    if (timerEl) {
+        timerEl.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
 
     if (timeRemaining <= 0) {
         clearInterval(timerInterval);
         isMatchRunning = false;
         
+        // Actualizar estadísticas acumuladas en el Modo Carrera
+        careerData.matchesPlayed++;
+        careerData.goalsScored += scoreHome;
+        careerData.goalsConceded += scoreAway;
+
+        if (scoreHome > scoreAway) {
+            careerData.wins++;
+        } else if (scoreHome === scoreAway) {
+            careerData.draws++;
+        } else {
+            careerData.losses++;
+        }
+
+        saveCareerData();
         resetPlayersAndPositions();
 
-        alert(`¡Final del Partido! Resultado: ${scoreHome} - ${scoreAway}`);
+        alert(`¡Final del Partido! Resultado: LOCAL ${scoreHome} - ${scoreAway} VISITANTE`);
+        
+        // Regresar automáticamente al Modo Carrera tras finalizar el juego
+        showView('career-hub-view');
     } else {
         timeRemaining--;
     }
@@ -646,69 +720,78 @@ function updateMatch() {
     requestAnimationFrame(updateMatch);
 }
 
-// Inicialización de la vista
-initPlayers();
-drawPitch();
-drawPlayers();
-drawBall();
+/* ==========================================
+   4. EVENTOS DE SORTEO Y COMIENZO DE PARTIDO
+   ========================================== */
 
-// 1. Mostrar Modal
-document.getElementById('btn-start-match').addEventListener('click', () => {
-    if (!isMatchRunning) {
-        scoreHome = 0;
-        scoreAway = 0;
-        document.querySelector('#team-home span').innerText = '0';
-        document.querySelector('#team-away span').innerText = '0';
-        timeRemaining = 120;
+// 1. Mostrar Modal y preparar partido
+const btnStartMatch = document.getElementById('btn-start-match');
+if (btnStartMatch) {
+    btnStartMatch.addEventListener('click', () => {
+        showView('match-view'); // Transición a la cancha
+        if (!isMatchRunning) {
+            scoreHome = 0;
+            scoreAway = 0;
+            
+            const homeScoreEl = document.querySelector('#team-home span');
+            const awayScoreEl = document.querySelector('#team-away span');
+            if (homeScoreEl) homeScoreEl.innerText = '0';
+            if (awayScoreEl) awayScoreEl.innerText = '0';
+            
+            timeRemaining = 120;
 
-        resetPlayersAndPositions();
+            resetPlayersAndPositions();
 
-        const modal = document.getElementById('coin-toss-modal');
+            const modal = document.getElementById('coin-toss-modal');
+            const coin = document.getElementById('coin');
+            const resultText = document.getElementById('toss-result');
+            const spinBtn = document.getElementById('btn-spin-coin');
+
+            if (modal) modal.style.display = 'flex';
+            if (resultText) resultText.innerText = "Presioná el botón para sortear el saque";
+            if (coin) coin.style.transform = 'rotateY(0deg)';
+            if (spinBtn) spinBtn.style.display = 'block';
+        }
+    });
+}
+
+// 2. Girar Moneda y comenzar bucle de juego
+const btnSpinCoin = document.getElementById('btn-spin-coin');
+if (btnSpinCoin) {
+    btnSpinCoin.addEventListener('click', function() {
         const coin = document.getElementById('coin');
         const resultText = document.getElementById('toss-result');
-        const spinBtn = document.getElementById('btn-spin-coin');
+        const modal = document.getElementById('coin-toss-modal');
 
-        modal.style.display = 'flex';
-        resultText.innerText = "Presioná el botón para sortear el saque";
-        coin.style.transform = 'rotateY(0deg)';
-        if (spinBtn) spinBtn.style.display = 'block';
-    }
-});
+        this.style.display = 'none';
+        if (resultText) resultText.innerText = "¡Girando moneda...";
 
-// 2. Sorteo de Moneda
-document.getElementById('btn-spin-coin').addEventListener('click', function() {
-    const coin = document.getElementById('coin');
-    const resultText = document.getElementById('toss-result');
-    const modal = document.getElementById('coin-toss-modal');
+        let winner = Math.random() < 0.5 ? 'home' : 'away';
+        kickoffTeam = winner;
 
-    this.style.display = 'none';
-    resultText.innerText = "¡Girando moneda...";
-
-    let winner = Math.random() < 0.5 ? 'home' : 'away';
-    kickoffTeam = winner;
-
-    let rotations = winner === 'home' ? 1800 : 1980;
-    coin.style.transform = `rotateY(${rotations}deg)`;
-
-    setTimeout(() => {
-        let teamName = winner === 'home' ? 'LOCAL (Rojo)' : 'VISITANTE (Azul)';
-        resultText.innerText = `¡Gana el saque: ${teamName}!`;
-    }, 2000);
-
-    setTimeout(() => {
-        modal.style.display = 'none';
-        setupKickoffFormation(kickoffTeam);
-        isMatchRunning = true;
-        requestAnimationFrame(updateMatch);
+        let rotations = winner === 'home' ? 1800 : 1980;
+        if (coin) coin.style.transform = `rotateY(${rotations}deg)`;
 
         setTimeout(() => {
-            performInitialPass();
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(updateTimer, 1000);
-        }, 1000);
+            let teamName = winner === 'home' ? 'LOCAL (Rojo)' : 'VISITANTE (Azul)';
+            if (resultText) resultText.innerText = `¡Gana el saque: ${teamName}!`;
+        }, 2000);
 
-    }, 3500);
-});
+        setTimeout(() => {
+            if (modal) modal.style.display = 'none';
+            setupKickoffFormation(kickoffTeam);
+            isMatchRunning = true;
+            requestAnimationFrame(updateMatch);
+
+            setTimeout(() => {
+                performInitialPass();
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimer, 1000);
+            }, 1000);
+
+        }, 3500);
+    });
+}
 
 function tomarDecision(opcion) {
     alert("Tomaste la decisión: " + opcion);

@@ -11,6 +11,7 @@ body {
     display: flex;
     justify-content: center;
     padding: 20px;
+    min-height: 100vh;
 }
 
 .game-container {
@@ -22,7 +23,73 @@ body {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
+/* GESTIÓN DE PANTALLAS (NAVEGACIÓN) */
+.screen {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* MENÚ PRINCIPAL */
+.menu-card {
+    text-align: center;
+    background-color: #24242a;
+    padding: 40px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 450px;
+    margin: 40px 0;
+    border: 1px solid #3b82f6;
+}
+
+.menu-card h1 {
+    font-size: 2.2rem;
+    color: #3b82f6;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #9ca3af;
+    margin-bottom: 25px;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* BOTONES GLOBALES */
+.btn-primary, .btn-secondary, .btn-danger, .btn-option, #btn-start-match, #btn-spin-coin {
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    border: none;
+    font-size: 1rem;
+}
+
+.btn-primary { background-color: #10b981; color: white; }
+.btn-primary:hover { background-color: #059669; }
+
+.btn-secondary { background-color: #3b82f6; color: white; }
+.btn-secondary:hover { background-color: #2563eb; }
+
+.btn-danger { background-color: #ef4444; color: white; }
+.btn-danger:hover { background-color: #dc2626; }
+
+.btn-option { background-color: #f59e0b; color: #121214; }
+.btn-option:hover { background-color: #d97706; }
+
+/* HEADER Y STATS */
 .player-header {
+    width: 100%;
     display: flex;
     align-items: center;
     gap: 20px;
@@ -51,12 +118,23 @@ body {
 }
 
 .main-content {
+    width: 100%;
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
 }
 
+/* HUB ACTIONS */
+.hub-actions-grid {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* MATCH SECTION & CANVAS */
 .match-section {
+    width: 100%;
     text-align: center;
     background-color: #24242a;
     padding: 15px;
@@ -100,43 +178,49 @@ canvas {
     background-color: #24242a;
     padding: 15px;
     border-radius: 8px;
+    width: 100%;
 }
 
-.options-grid {
+/* PRE & POST MATCH */
+.preview-card, .post-card {
+    width: 100%;
+    max-width: 500px;
+    margin: 30px 0;
+}
+
+.match-preview-teams {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+    width: 100%;
 }
 
-.btn-option, #btn-start-match, #btn-spin-coin {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 6px;
+.team-box {
+    padding: 15px 25px;
+    border-radius: 8px;
     font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-    margin-top: 10px;
 }
 
-.btn-option:hover, #btn-start-match:hover, #btn-spin-coin:hover {
-    background-color: #2563eb;
+.home-box { background-color: #ef4444; }
+.away-box { background-color: #3b82f6; }
+.vs-badge { font-size: 1.2rem; font-weight: bold; color: #f59e0b; }
+
+.final-score-display {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #f59e0b;
+    margin: 15px 0;
 }
 
-/* ==========================================
-   ESTILOS PARA EL MODAL DEL SORTEO / COIN TOSS
-   ========================================== */
-
+/* MODAL SORTEO */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
     background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(4px);
-    display: none; /* Se activa desde el JS */
+    display: none;
     justify-content: center;
     align-items: center;
     z-index: 9999;
@@ -148,7 +232,7 @@ canvas {
     border-radius: 12px;
     padding: 30px;
     text-align: center;
-    width: 320px;
+    width: 340px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     display: flex;
     flex-direction: column;
@@ -156,15 +240,13 @@ canvas {
 }
 
 .coin-container {
-    width: 100px;
-    height: 100px;
+    width: 100px; height: 100px;
     perspective: 1000px;
     margin: 20px 0;
 }
 
 .coin {
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
     position: relative;
     transform-style: preserve-3d;
     transition: transform 2s cubic-bezier(0.25, 1, 0.5, 1);
@@ -172,8 +254,7 @@ canvas {
 
 .coin-face {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
     border-radius: 50%;
     backface-visibility: hidden;
     display: flex;
@@ -182,23 +263,9 @@ canvas {
     font-size: 1.1rem;
     font-weight: bold;
     border: 4px solid #f59e0b;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-.coin-front {
-    background-color: #ef4444; /* Color Equipo Local (Rojo) */
-    color: #ffffff;
-}
+.coin-front { background-color: #ef4444; color: #ffffff; }
+.coin-back { background-color: #3b82f6; color: #ffffff; transform: rotateY(180deg); }
 
-.coin-back {
-    background-color: #3b82f6; /* Color Equipo Visitante (Azul) */
-    color: #ffffff;
-    transform: rotateY(180deg);
-}
-
-#toss-result {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #f59e0b;
-    min-height: 24px;
-}
+#toss-result { font-size: 1rem; color: #f59e0b; min-height: 24px; }
