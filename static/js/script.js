@@ -1,3 +1,7 @@
+/* ==========================================
+   1. ESTADO DEL JUEGO Y MODO CARRERA
+   ========================================== */
+
 let careerData = {
     matchesPlayed: 0,
     wins: 0,
@@ -30,6 +34,9 @@ function updateCareerUI() {
     if (goalsEl) goalsEl.innerText = `${careerData.goalsScored}:${careerData.goalsConceded}`;
 }
 
+/* ==========================================
+   2. NAVEGACIÓN Y VISTAS
+   ========================================== */
 
 function showView(viewId) {
     const views = document.querySelectorAll('.view');
@@ -41,6 +48,13 @@ function showView(viewId) {
     }
 }
 
+function tomarDecision(opcion) {
+    alert("Tomaste la decisión: " + opcion);
+}
+
+/* ==========================================
+   3. INICIALIZACIÓN
+   ========================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
     loadCareerData();
@@ -54,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnGoMatch) btnGoMatch.addEventListener('click', () => showView('match-preview-view'));
     if (btnBackHub) btnBackHub.addEventListener('click', () => showView('career-hub-view'));
     if (btnExitCareer) btnExitCareer.addEventListener('click', () => showView('main-menu-view'));
-    
 
     initPlayers();
     drawPitch();
@@ -62,10 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
     drawBall();
 });
 
-
+/* ==========================================
+   4. VARIABLES DEL CANVAS Y PARTIDO
+   ========================================== */
 
 const canvas = document.getElementById('footballPitch');
-const ctx = canvas.getContext('2d');
+const ctx = canvas ? canvas.getContext('2d') : null;
 
 let isMatchRunning = false;
 let isKickoffPhase = false;
@@ -117,6 +132,10 @@ const formation433Away = [
 
 let players = [];
 
+/* ==========================================
+   5. LOGICA DE JUGADORES Y POSICIONES
+   ========================================== */
+
 function initPlayers() {
     players = [];
     const createPlayer = (p, team, color) => ({
@@ -161,8 +180,10 @@ function resetPlayersAndPositions() {
         p.isTackling = false;
     });
 
-    ball.x = canvas.width / 2;
-    ball.y = canvas.height / 2;
+    if (canvas) {
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+    }
     ball.vx = 0;
     ball.vy = 0;
     ball.curveX = 0;
@@ -174,7 +195,12 @@ function resetPlayersAndPositions() {
     drawBall();
 }
 
+/* ==========================================
+   6. RENDERIZADO EN CANVAS
+   ========================================== */
+
 function drawPitch() {
+    if (!ctx || !canvas) return;
     ctx.fillStyle = '#2e7d32';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -204,6 +230,7 @@ function drawPitch() {
 }
 
 function drawPlayers() {
+    if (!ctx) return;
     players.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
@@ -227,6 +254,7 @@ function drawPlayers() {
 }
 
 function drawBall() {
+    if (!ctx) return;
     ctx.beginPath();
     ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
     ctx.fillStyle = '#ffffff';
@@ -236,7 +264,12 @@ function drawBall() {
     ctx.stroke();
 }
 
+/* ==========================================
+   7. FÍSICAS, COLISIONES Y REGLAS DE JUEGO
+   ========================================== */
+
 function setupKickoffFormation(teamWhoKicks) {
+    if (!canvas) return;
     isKickoffPhase = true;
     teamPassCount = 0;
     ball.x = canvas.width / 2;
@@ -287,6 +320,7 @@ function performInitialPass() {
 }
 
 function enforcePitchBounds() {
+    if (!canvas) return;
     let minX = 24, maxX = canvas.width - 24;
     let minY = 24, maxY = canvas.height - 24;
 
@@ -359,6 +393,7 @@ function resetAfterGoal() {
 }
 
 function checkGoals() {
+    if (!canvas) return;
     let isGoalHeight = (ball.y >= 215 && ball.y <= 335);
 
     if (ball.x <= 15 && isGoalHeight) {
@@ -375,8 +410,12 @@ function checkGoals() {
     }
 }
 
+/* ==========================================
+   8. INTELIGENCIA ARTIFICIAL Y LÓGICA DEL PARTIDO
+   ========================================== */
+
 function updateAI() {
-    if (isKickoffPhase) return;
+    if (isKickoffPhase || !canvas) return;
 
     if (ball.passCooldown > 0) ball.passCooldown--;
 
@@ -721,7 +760,7 @@ function updateMatch() {
 }
 
 /* ==========================================
-   4. EVENTOS DE SORTEO Y COMIENZO DE PARTIDO
+   9. EVENTOS DE SORTEO Y COMIENZO DE PARTIDO
    ========================================== */
 
 // 1. Mostrar Modal y preparar partido
@@ -791,8 +830,4 @@ if (btnSpinCoin) {
 
         }, 3500);
     });
-}
-
-function tomarDecision(opcion) {
-    alert("Tomaste la decisión: " + opcion);
 }
