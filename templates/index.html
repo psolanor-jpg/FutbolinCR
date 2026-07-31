@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FutbolinCR - Carrera de Jugador</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="game-container">
+        <header class="player-header">
+            <div class="badge-ovr" id="player-ovr">50</div>
+            <div class="player-info">
+                <h2 id="player-name">Tu Nombre</h2>
+                <p id="player-club">Escorpiones de Belén | 16 años</p>
+            </div>
+            <div class="player-stats">
+                <span>PJ: <b id="stat-pj">0</b></span>
+                <span>GLS: <b id="stat-gls">0</b></span>
+                <span>AST: <b id="stat-ast">0</b></span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <section class="match-section">
+                <h3>Cancha 2D - Partido Importante</h3>
+                
+                <div class="scoreboard">
+                    <div class="team-score" id="team-home">LOCAL: <span>0</span></div>
+                    <div class="match-timer" id="match-timer">02:00</div>
+                    <div class="team-score" id="team-away">VISITANTE: <span>0</span></div>
+                </div>
+
+                <canvas id="footballPitch" width="900" height="550"></canvas>
+                
+                <div class="match-controls">
+                    <button id="btn-start-match">¡Jugar Partido Visual!</button>
+                </div>
+            </section>
+
+            <section class="decisions-section">
+                <h3>Decisiones de Carrera</h3>
+                <p id="decision-text">Bienvenido a FutbolinCR. ¿Estás listo para iniciar tu carrera profesional?</p>
+                
+                <div class="options-grid" id="options-container">
+                    <button class="btn-option" onclick="tomarDecision(1)">Aceptar desafío</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modal de Saque Inicial -->
+    <div id="coin-toss-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Sorteo de Saque Inicial</h2>
+            
+            <div class="coin-container">
+                <div id="coin" class="coin">
+                    <div class="coin-face coin-front">LOCAL</div>
+                    <div class="coin-face coin-back">VISITANTE</div>
+                </div>
+            </div>
+            
+            <h3 id="toss-result">Presioná el botón para sortear el saque</h3>
+            
+            <button id="btn-spin-coin">Click para girar la moneda</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>

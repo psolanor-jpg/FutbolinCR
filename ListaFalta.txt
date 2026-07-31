@@ -1,0 +1,47 @@
+---  1. BUGS & PULIDO INICIAL (Lo que tenemos corriendo) ---
+[ ] Probar la nueva física del gol (que entre fluido por el marco y no rebote afuera).
+[ ] Revisar límites de la cancha y respuesta de los porteros.
+[ ] Ajustar fluidez de animaciones y colisiones entre jugadores.
+[ ] Pulir la interfaz base para que la cancha se adapte bien en pantalla.
+
+
+---  2. ESTRUCTURA DE LA PÁGINA Y NAVEGACIÓN ---
+[ ] Diseñar el Menú Principal (Iniciar Carrera, Simulación Rápida, Opciones).
+[ ] Crear el panel/dashboard central de la carrera (Hub del Jugador/Manager).
+[ ] Sistema para guardar y cargar partida (LocalStorage / Base de datos).
+[ ] Pantalla de transición antes y después de cada partido.
+
+
+---  3. CREACIÓN Y PROGRESIÓN DEL JUGADOR ---
+[ ] Formulario de creación: Nombre, nacionalidad, posición, edad, pie hábil y apariencia.
+[ ] Panel de Atributos (Pase, tiro, velocidad, estamina) que suban con entrenamiento y experiencia.
+[ ] Sistema de Reputación: Popularidad, Confianza del DT, Prestigio y Liderazgo.
+[ ] Pantalla de Retiro: Resumen histórico, títulos, goles, asistencias y legado.
+
+
+---  4. MODO CARRERA MANAGER & SIMULACIÓN ---
+[ ] Modo Simulación Rápida (Estilo Copero, partidos no clave se simulan en segundos).
+[ ] Gestión de plantilla Manager: Elegir alineación, formación (4-3-3, 4-4-2, etc.) y tácticas.
+[ ] Mercado de fichajes: Ofertas de clubes, renovaciones, cesiones y negociaciones.
+[ ] Objetivos de la directiva y opción de dirigir Selección Nacional.
+
+
+--- 5. DECISIONES & VIDA FUERA DE LA CANCHA ---
+[ ] Sistema de decisiones periódicas: Entrenar vs. Descansar, cambiar de representante, etc.
+[ ] Ruedas de prensa y respuestas con impacto en reputación/confianza.
+[ ] Interacciones y comentarios de: Prensa, Aficionados, Familia y Entrenador.
+[ ] Convocatorias a Selección Nacional (Eliminatorias, Copas, Mundial).
+
+
+---  6. MEJORAS AL ENGINE DE PARTIDOS (CANVAS 2D) ---
+[ ] Reglas avanzadas: Faltas, Tarjetas (Amarilla/Roja), Lesiones y Cambios.
+[ ] Implementar Penalizaciones, Tiros libres y Fuera de juego (Offside).
+[ ] Lógica para partidos clave: Prórroga (+30s) y Tanda de penales si hay empate.
+[ ] Filtro de "Partidos Importantes": Activar visual 2D solo en debuts, clásicos, finales o récords.
+
+
+---  7. MEJORAS VISUALES Y SONORAS ---
+[ ] Efecto visual de la red moviéndose al cantar gol.
+[ ] Marcador de partido estilizado y tiempo de juego en pantalla.
+[ ] Efectos de sonido (Silbato del árbitro, grito de gol, ambiente de estadio).
+[ ] Indicadores sobre jugadores (Jugador destacado, nombres/dorsales claros).
