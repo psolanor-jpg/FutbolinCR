@@ -89,6 +89,7 @@ let scoreHome = 0;
 let scoreAway = 0;
 let timeRemaining = 120;
 let timerInterval = null;
+let animationFrameId = null; // Control para evitar bucles duplicados de animación
 
 let teamPassCount = 0; 
 
@@ -718,8 +719,8 @@ function updateTimer() {
     if (timeRemaining <= 0) {
         clearInterval(timerInterval);
         isMatchRunning = false;
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
         
-        // Actualizar estadísticas acumuladas en el Modo Carrera
         careerData.matchesPlayed++;
         careerData.goalsScored += scoreHome;
         careerData.goalsConceded += scoreAway;
@@ -736,8 +737,6 @@ function updateTimer() {
         resetPlayersAndPositions();
 
         alert(`¡Final del Partido! Resultado: LOCAL ${scoreHome} - ${scoreAway} VISITANTE`);
-        
-        // Regresar automáticamente al Modo Carrera tras finalizar el juego
         showView('career-hub-view');
     } else {
         timeRemaining--;
@@ -756,18 +755,17 @@ function updateMatch() {
     drawPlayers();
     drawBall();
 
-    requestAnimationFrame(updateMatch);
+    animationFrameId = requestAnimationFrame(updateMatch);
 }
 
 /* ==========================================
    9. EVENTOS DE SORTEO Y COMIENZO DE PARTIDO
    ========================================== */
 
-// 1. Mostrar Modal y preparar partido
 const btnStartMatch = document.getElementById('btn-start-match');
 if (btnStartMatch) {
     btnStartMatch.addEventListener('click', () => {
-        showView('match-view'); // Transición a la cancha
+        showView('match-view'); 
         if (!isMatchRunning) {
             scoreHome = 0;
             scoreAway = 0;
@@ -794,7 +792,6 @@ if (btnStartMatch) {
     });
 }
 
-// 2. Girar Moneda y comenzar bucle de juego
 const btnSpinCoin = document.getElementById('btn-spin-coin');
 if (btnSpinCoin) {
     btnSpinCoin.addEventListener('click', function() {
@@ -820,7 +817,9 @@ if (btnSpinCoin) {
             if (modal) modal.style.display = 'none';
             setupKickoffFormation(kickoffTeam);
             isMatchRunning = true;
-            requestAnimationFrame(updateMatch);
+            
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            animationFrameId = requestAnimationFrame(updateMatch);
 
             setTimeout(() => {
                 performInitialPass();
