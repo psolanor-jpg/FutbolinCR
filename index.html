@@ -111,16 +111,25 @@
     <!-- PANTALLA 2: CANCHA Y PARTIDO 2D -->
     <div id="screen-match" class="screen">
       <div class="match-header">
-        <div class="team-badge">
+        <div class="team-badge" id="team-home">
           <span id="match-flag"></span>
           <span id="match-country-name">MI PAÍS</span>
+          <span>(</span><span>0</span><span>)</span>
         </div>
-        <div class="score">0 - 0</div>
-        <div>TIEMPO: <span id="timer">00:00</span></div>
+        <div class="score">
+          <span id="match-timer">02:00</span>
+        </div>
+        <div class="team-badge" id="team-away">
+          <span>VISITANTE</span>
+          <span>(</span><span>0</span><span>)</span>
+        </div>
       </div>
+
+      <!-- CANVAS CON SU ID Y TAMAÑO EXACTO -->
       <div id="canvas-container">
-        <canvas id="field" width="800" height="480"></canvas>
+        <canvas id="footballPitch" width="900" height="550"></canvas>
       </div>
+
       <div class="action-bar">
         <button class="btn btn-back" onclick="exitMatch()">Abandonar Partido</button>
       </div>

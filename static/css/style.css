@@ -41,6 +41,7 @@ body {
   font-weight: 700;
   margin-bottom: 25px;
   color: #ffffff;
+  text-align: center;
 }
 
 .creation-grid {
@@ -48,6 +49,13 @@ body {
   grid-template-columns: 280px 1fr 300px;
   gap: 25px;
   align-items: start;
+}
+
+/* Para pantallas medianas o pequeñas */
+@media (max-width: 900px) {
+  .creation-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .column-title {
@@ -58,17 +66,24 @@ body {
   color: #e5e7eb;
 }
 
-/* COLUMNA 1: IDENTIDAD */
+/* COLUMNA 1: IDENTIDAD Y CORRECCIÓN SVG */
 .jersey-container {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-bottom: 20px;
   position: relative;
+  width: 100%;
+  max-width: 180px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .jersey-svg {
-  width: 180px;
-  height: 200px;
+  width: 100%;
+  height: auto;
+  max-height: 180px;
+  display: block;
   filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
 }
 
@@ -193,7 +208,7 @@ body {
   text-overflow: ellipsis;
 }
 
-/* COLUMNA 3: POSICIÓN (CANCHA) */
+/* COLUMNA 3: POSICIÓN (CANCHA TÁCTICA) */
 .tactical-pitch {
   background: radial-gradient(circle, #0f4027 0%, #082918 100%);
   border: 2px solid #1c5e3a;
@@ -281,7 +296,7 @@ body {
 
 .btn-confirm:hover { background: #ffffff; }
 
-/* 2. PANTALLA DE PARTIDO (CANCHA 2D) */
+/* 2. PANTALLA DE PARTIDO Y CANVAS DE JUEGO (CORREGIDO) */
 .match-header {
   display: flex;
   justify-content: space-between;
@@ -304,10 +319,20 @@ body {
 #canvas-container {
   display: flex;
   justify-content: center;
+  align-items: center;
+  width: 100%;
+  background: #000000;
+  border-radius: 12px;
+  padding: 10px;
 }
 
+/* Ajuste responsivo del Canvas de Partido */
 canvas {
   background: #2e7d32;
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  display: block;
 }
