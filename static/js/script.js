@@ -62,9 +62,9 @@ function initPlayers() {
         baseY: p.y,
         x: p.x,
         y: p.y,
-        radius: p.role === 'PO' ? 7.5 : 9, // Hitbox un poco más pequeña/fina para porteros
+        radius: p.role === 'PO' ? 7.5 : 9, 
         color: color,
-        baseSpeed: p.role === 'PO' ? 0.65 : (0.9 + Math.random() * 0.25), // Porteros más lentos
+        baseSpeed: p.role === 'PO' ? 0.65 : (0.9 + Math.random() * 0.25),
         energy: 100,
         maxEnergy: 100,
         isExhausted: false,
@@ -74,12 +74,38 @@ function initPlayers() {
         targetX: p.x,
         targetY: p.y,
         recoveredTimer: 0,
-        stunnedTimer: 0, // Temporizador para el aturdimiento tras atajada
+        stunnedTimer: 0,
         isTackling: false
     });
 
     formation433Home.forEach(p => players.push(createPlayer(p, 'home', '#ef4444')));
     formation433Away.forEach(p => players.push(createPlayer(p, 'away', '#3b82f6')));
+}
+
+function resetPlayersAndPositions() {
+    players.forEach(p => {
+        p.x = p.baseX;
+        p.y = p.baseY;
+        p.targetX = p.baseX;
+        p.targetY = p.baseY;
+        p.energy = p.maxEnergy;
+        p.isExhausted = false;
+        p.recoveredTimer = 0;
+        p.stunnedTimer = 0;
+        p.isTackling = false;
+    });
+
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.vx = 0;
+    ball.vy = 0;
+    ball.curveX = 0;
+    ball.curveY = 0;
+    ball.holder = null;
+
+    drawPitch();
+    drawPlayers();
+    drawBall();
 }
 
 function drawPitch() {
@@ -267,19 +293,23 @@ function resetAfterGoal() {
 }
 
 function checkGoals() {
-    // Si el balón cruza la línea blanca (x=15 o x=canvas.width-15) dentro de la altura de la portería (y: 215 a 335)
-    if (ball.x <= 16 && ball.y >= 215 && ball.y <= 335) {
+    // 🥅 DETECCIÓN Y FÍSICA FLUIDA DEL GOL
+    let isGoalHeight = (ball.y >= 215 && ball.y <= 335);
+
+    // Gol en la portería izquierda (Gana Visitante)
+    if (ball.x <= 15 && isGoalHeight) {
         scoreAway++;
         document.querySelector('#team-away span').innerText = scoreAway;
         resetAfterGoal();
-    } else if (ball.x >= canvas.width - 16 && ball.y >= 215 && ball.y <= 335) {
+    } 
+    // Gol en la portería derecha (Gana Local)
+    else if (ball.x >= canvas.width - 15 && isGoalHeight) {
         scoreHome++;
         document.querySelector('#team-home span').innerText = scoreHome;
         resetAfterGoal();
     }
 }
 
-// 🧠 IA AVANZADA CON PORTEROS ATURDIDOS, AYUDA CERCANA Y JUGADAS HEROICAS
 function updateAI() {
     if (isKickoffPhase) return;
 
@@ -295,7 +325,6 @@ function updateAI() {
             return;
         }
 
-        // 🛑 LÓGICA DE PORTERO ATURDIDO TRAS ATAJADA (~1.5 segs = 90 frames)
         if (p.stunnedTimer > 0) {
             p.stunnedTimer--;
         }
@@ -311,23 +340,18 @@ function updateAI() {
         let distToBall = Math.hypot(ball.x - p.x, ball.y - p.y);
         
         let staminaRatio = p.energy / p.maxEnergy;
-        // Si está aturdido el portero se mueve súper lento
         let currentSpeed = p.stunnedTimer > 0 
             ? p.baseSpeed * 0.25 
             : (p.isExhausted ? p.baseSpeed * 0.45 : p.baseSpeed * (0.65 + staminaRatio * 0.35));
 
-        // Intercepción básica del balón (Hitbox reducida para portero)
         let catchRadius = (p.role === 'PO' ? p.radius + 1 : p.radius + ball.radius + 2);
         if (distToBall < catchRadius && !ball.holder && ball.passCooldown === 0) {
-            
-            // Si un portero ataja/agarra un balón fuerte, ¡SE ATURDE!
             if (p.role === 'PO' && Math.hypot(ball.vx, ball.vy) > 3.0) {
-                p.stunnedTimer = 90; // ~1.5 segundos aturdido
+                p.stunnedTimer = 90; 
             }
 
-            // Cambia la posesión
             if (ball.holder && ball.holder.team !== p.team) {
-                teamPassCount = 0; // Se reinician pases si hay cambio de posesión
+                teamPassCount = 0; 
             }
             ball.holder = p;
             holdTimer = 0;
@@ -335,7 +359,7 @@ function updateAI() {
             ball.curveY = 0;
         }
 
-        // 🛡️ BARRIDAS Y PRESION DEFENSIVA
+        // Barridas y marca
         if (ball.holder && ball.holder !== p && p.team !== ball.holder.team) {
             let holder = ball.holder;
             let distToHolder = Math.hypot(holder.x - p.x, holder.y - p.y);
@@ -370,7 +394,7 @@ function updateAI() {
             }
         }
 
-        // 🏃 POSEEDOR DEL BALÓN
+        // Poseedor del Balón
         if (ball.holder === p) {
             if (!p.isExhausted) p.energy = Math.max(0, p.energy - 0.08);
             holdTimer++;
@@ -386,7 +410,6 @@ function updateAI() {
             let distToGoal = Math.abs(targetGoalX - p.x);
             let teammates = players.filter(t => t.team === p.team && t !== p && t.role !== 'PO' && t.recoveredTimer === 0);
 
-            // 🪫 SI EL ATACANTE NO TIENE ESTAMINA: Busca pase urgente a un cercano
             if (p.isExhausted) {
                 let nearbyTeammate = teammates.find(t => Math.hypot(t.x - p.x, t.y - p.y) < 130 && !isPassLineBlocked(p, t));
                 if (nearbyTeammate) {
@@ -400,22 +423,18 @@ function updateAI() {
                 }
             }
 
-            // ⚠️ JUGADA HEROICA RIESGOSA (Muchos pases sin nada -> encarar solo y arriesgar)
             if (teamPassCount >= 4 && distToGoal < 300) {
-                // Intenta una jugada individual apresurada
                 if (Math.random() < 0.05) {
                     ball.holder = null;
                     ball.passCooldown = 20;
 
-                    // Si le sale mal por "apresurado", regala el balón hacia un rival cercano
                     let enemy = players.find(e => e.team !== p.team && Math.hypot(e.x - p.x, e.y - p.y) < 100);
-                    if (enemy && Math.random() < 0.6) { // 60% de probabilidad de cagada
+                    if (enemy && Math.random() < 0.6) {
                         let angle = Math.atan2(enemy.y - p.y, enemy.x - p.x);
-                        ball.vx = Math.cos(angle) * 3.0; // Pésimo pase / entrega
+                        ball.vx = Math.cos(angle) * 3.0;
                         ball.vy = Math.sin(angle) * 3.0;
                         teamPassCount = 0;
                     } else {
-                        // Bombazo directo desesperado
                         let angle = Math.atan2(275 - p.y, targetGoalX - p.x);
                         ball.vx = Math.cos(angle) * 8.5;
                         ball.vy = Math.sin(angle) * 8.5;
@@ -424,7 +443,6 @@ function updateAI() {
                 }
             }
 
-            // ⚽ ATAQUE REGULAR Y DISPAROS
             if (distToGoal < 260) {
                 let wellPositionedPartner = teammates.find(t => 
                     (p.team === 'home' ? t.x > p.x - 10 : t.x < p.x + 10) && 
@@ -480,7 +498,6 @@ function updateAI() {
                 }
             }
         } 
-        // JUGADOR EN PERSECUCIÓN
         else if (isChaser && !ball.holder) {
             if (!p.isExhausted) p.energy = Math.max(0, p.energy - 0.05);
 
@@ -491,7 +508,6 @@ function updateAI() {
                 p.y += (dy / dist) * (currentSpeed * 1.25);
             }
         } 
-        // POSICIONAMIENTO, COBERTURA Y APOYO AL EXHAUSTO
         else {
             p.decisionTimer++;
 
@@ -502,11 +518,9 @@ function updateAI() {
                 let zoneX = p.baseX;
                 let zoneY = p.baseY;
 
-                // 🤝 APOYO CERCANO: Si el portador de mi equipo está agotado, rompo mi zona y voy a rescatarlo
                 let ballHolder = ball.holder;
                 if (ballHolder && ballHolder.team === p.team && ballHolder.isExhausted) {
                     let distToExhausted = Math.hypot(ballHolder.x - p.x, ballHolder.y - p.y);
-                    // Solo acuden los JUGADORES CERCANOS (~120px)
                     if (distToExhausted < 120) {
                         zoneX = ballHolder.x + (p.team === 'home' ? 20 : -20);
                         zoneY = ballHolder.y + (p.y > ballHolder.y ? 25 : -25);
@@ -551,7 +565,7 @@ function updateAI() {
         }
     });
 
-    // ⚽ FÍSICA DEL BALÓN CON EFECTO Y REBOTES REALES
+    // ⚽ FÍSICA MEJORADA DEL BALÓN
     if (!ball.holder) {
         ball.x += ball.vx;
         ball.y += ball.vy;
@@ -564,25 +578,32 @@ function updateAI() {
         ball.curveX *= 0.88;
         ball.curveY *= 0.88;
 
-        // Verificar si el balón va directo a la portería (y: 215 a 335)
         let isAtGoalHeight = (ball.y >= 215 && ball.y <= 335);
 
+        // Rebotes en la línea de fondo fuera del marco
         if (!isAtGoalHeight) {
-            // Rebote normal en la línea de fondo fuera del marco (x=15 o x=canvas.width-15)
             if (ball.x <= 15 || ball.x >= canvas.width - 15) { 
                 ball.vx *= -0.8; 
                 ball.curveX = 0; 
                 ball.x = ball.x <= 15 ? 16 : canvas.width - 16;
             }
         } else {
-            // Entró a la portería -> rebota suavemente en la red del fondo
-            if (ball.x <= 2 || ball.x >= canvas.width - 2) { 
-                ball.vx *= -0.3; // La red frena el impacto
+            // Entró a la red de la portería
+            if (ball.x <= 4 || ball.x >= canvas.width - 4) { 
+                ball.vx *= -0.2; // Amortiguación de la red
                 ball.curveX = 0; 
             }
         }
 
-        // Rebote en las líneas de banda (arriba y abajo)
+        // Rebotes en los postes de la portería
+        if (Math.abs(ball.y - 215) < 5 || Math.abs(ball.y - 335) < 5) {
+            if (Math.abs(ball.x - 15) < 5 || Math.abs(ball.x - (canvas.width - 15)) < 5) {
+                ball.vx *= -0.85;
+                ball.vy *= -0.85;
+            }
+        }
+
+        // Rebote en líneas superiores e inferiores
         if (ball.y <= 15 || ball.y >= canvas.height - 15) { 
             ball.vy *= -0.8; 
             ball.curveY = 0; 
@@ -602,6 +623,10 @@ function updateTimer() {
     if (timeRemaining <= 0) {
         clearInterval(timerInterval);
         isMatchRunning = false;
+        
+        // 🔁 RESETEAR POSICIONES Y ESTAMINA COMPLETA
+        resetPlayersAndPositions();
+
         alert(`¡Final del Partido! Resultado: ${scoreHome} - ${scoreAway}`);
     } else {
         timeRemaining--;
@@ -637,6 +662,8 @@ document.getElementById('btn-start-match').addEventListener('click', () => {
         document.querySelector('#team-home span').innerText = '0';
         document.querySelector('#team-away span').innerText = '0';
         timeRemaining = 120;
+
+        resetPlayersAndPositions();
 
         const modal = document.getElementById('coin-toss-modal');
         const coin = document.getElementById('coin');
