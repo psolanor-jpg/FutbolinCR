@@ -293,16 +293,13 @@ function resetAfterGoal() {
 }
 
 function checkGoals() {
-    // 🥅 DETECCIÓN Y FÍSICA FLUIDA DEL GOL
     let isGoalHeight = (ball.y >= 215 && ball.y <= 335);
 
-    // Gol en la portería izquierda (Gana Visitante)
     if (ball.x <= 15 && isGoalHeight) {
         scoreAway++;
         document.querySelector('#team-away span').innerText = scoreAway;
         resetAfterGoal();
     } 
-    // Gol en la portería derecha (Gana Local)
     else if (ball.x >= canvas.width - 15 && isGoalHeight) {
         scoreHome++;
         document.querySelector('#team-home span').innerText = scoreHome;
@@ -317,9 +314,8 @@ function updateAI() {
 
     let homeChaser = getClosestPlayer('home');
     let awayChaser = getClosestPlayer('away');
-    let attackingTeam = ball.holder ? ball.holder.team : (homeChaser && homeChaser.x > 450 ? 'home' : 'away');
 
-    players.forEach(p => {
+    players.forEach((p, index) => {
         if (p.recoveredTimer > 0) {
             p.recoveredTimer--;
             return;
@@ -329,7 +325,7 @@ function updateAI() {
             p.stunnedTimer--;
         }
 
-        // Estamina y recarga
+        // Control de estamina
         if (p.energy <= 0) p.isExhausted = true;
         if (p.isExhausted) {
             p.energy += 0.08;
@@ -344,6 +340,7 @@ function updateAI() {
             ? p.baseSpeed * 0.25 
             : (p.isExhausted ? p.baseSpeed * 0.45 : p.baseSpeed * (0.65 + staminaRatio * 0.35));
 
+        // Captura del balón
         let catchRadius = (p.role === 'PO' ? p.radius + 1 : p.radius + ball.radius + 2);
         if (distToBall < catchRadius && !ball.holder && ball.passCooldown === 0) {
             if (p.role === 'PO' && Math.hypot(ball.vx, ball.vy) > 3.0) {
@@ -359,11 +356,10 @@ function updateAI() {
             ball.curveY = 0;
         }
 
-        // Barridas y marca
+        // Marca y barridas
         if (ball.holder && ball.holder !== p && p.team !== ball.holder.team) {
             let holder = ball.holder;
             let distToHolder = Math.hypot(holder.x - p.x, holder.y - p.y);
-
             let isDefensiveArea = p.team === 'home' ? holder.x < 350 : holder.x > 550;
             
             if (p.role === 'DEF' && isDefensiveArea && distToHolder < 130 && !isChaser) {
@@ -394,7 +390,7 @@ function updateAI() {
             }
         }
 
-        // Poseedor del Balón
+        // POSEEDOR DEL BALÓN
         if (ball.holder === p) {
             if (!p.isExhausted) p.energy = Math.max(0, p.energy - 0.08);
             holdTimer++;
@@ -498,6 +494,7 @@ function updateAI() {
                 }
             }
         } 
+        // JUGADOR RECORRIENDO O PERSEGUIDOR
         else if (isChaser && !ball.holder) {
             if (!p.isExhausted) p.energy = Math.max(0, p.energy - 0.05);
 
@@ -508,50 +505,56 @@ function updateAI() {
                 p.y += (dy / dist) * (currentSpeed * 1.25);
             }
         } 
+        // POSICIONAMIENTO DINÁMICO Y DESMARQUE INDEPENDIENTE
         else {
             p.decisionTimer++;
 
-            if (p.decisionTimer > 15 + Math.random() * 10) {
+            // Frecuencia de decisión desfasada (para que no se muevan al mismo tiempo)
+            let decisionThreshold = 12 + (index % 7) * 4; 
+
+            if (p.decisionTimer > decisionThreshold) {
                 p.decisionTimer = 0;
 
-                let isAttacking = p.team === attackingTeam;
+                let isMyTeamInPossession = ball.holder && ball.holder.team === p.team;
+                let isBallInMyHalf = p.team === 'home' ? ball.x < 450 : ball.x > 450;
+                
                 let zoneX = p.baseX;
                 let zoneY = p.baseY;
 
-                let ballHolder = ball.holder;
-                if (ballHolder && ballHolder.team === p.team && ballHolder.isExhausted) {
-                    let distToExhausted = Math.hypot(ballHolder.x - p.x, ballHolder.y - p.y);
-                    if (distToExhausted < 120) {
-                        zoneX = ballHolder.x + (p.team === 'home' ? 20 : -20);
-                        zoneY = ballHolder.y + (p.y > ballHolder.y ? 25 : -25);
+                // Comportamiento por Sectores / Campos Divididos
+                if (isMyTeamInPossession) {
+                    let advance = p.team === 'home' ? 140 : -140;
+                    zoneX += advance;
+
+                    // Rotación/Desmarque: Si la pelota viene por su carril Y, abrirse o cruzarse
+                    if (Math.abs(ball.y - p.baseY) < 60) {
+                        zoneY += (p.number % 2 === 0 ? 45 : -45);
                     }
-                } 
-                else if (isAttacking) {
-                    let advance = p.team === 'home' ? 130 : -130;
-                    if (p.role === 'DEL') {
-                        zoneX += advance * 1.15;
-                        zoneY += (p.y < ball.y ? -35 : 35);
-                    } else if (p.role === 'MED') {
-                        zoneX += advance * 0.90; 
-                    } else if (p.role === 'DEF') {
-                        if (p.number === '2' || p.number === '3') zoneX += advance * 0.80;
-                        else zoneX += advance * 0.35;
-                    }
-                } else {
-                    let retreat = p.team === 'home' ? -35 : 35;
+                } else if (isBallInMyHalf) {
+                    let retreat = p.team === 'home' ? -20 : 20;
                     zoneX += retreat;
+                    zoneY += (ball.y - 275) * 0.35;
+                } else {
+                    zoneX += (p.team === 'home' ? 40 : -40);
                 }
 
-                p.personalOffsetX = (Math.random() - 0.5) * 25;
-                p.personalOffsetY = (Math.random() - 0.5) * 25;
+                // Evitar que compañeros del mismo rol se solapen en Y
+                let sameTeamPlayers = players.filter(other => other.team === p.team && other !== p && other.role === p.role);
+                sameTeamPlayers.forEach(other => {
+                    if (Math.abs(other.targetY - zoneY) < 30) {
+                        zoneY += (p.number > other.number ? 35 : -35);
+                    }
+                });
 
-                let ballWeightX = (ball.x - canvas.width / 2) * (p.role === 'PO' ? 0.04 : 0.15);
-                let ballWeightY = (ball.y - canvas.height / 2) * (p.role === 'PO' ? 0.08 : 0.14);
+                // Offset de movimiento orgánico individual
+                p.personalOffsetX = (Math.sin(Date.now() * 0.003 + index) * 20);
+                p.personalOffsetY = (Math.cos(Date.now() * 0.003 + index) * 20);
 
-                p.targetX = zoneX + ballWeightX + p.personalOffsetX;
-                p.targetY = zoneY + ballWeightY + p.personalOffsetY;
+                p.targetX = zoneX + p.personalOffsetX;
+                p.targetY = Math.max(35, Math.min(canvas.height - 35, zoneY + p.personalOffsetY));
             }
 
+            // Suavizado del movimiento
             let dx = p.targetX - p.x;
             let dy = p.targetY - p.y;
             let dist = Math.hypot(dx, dy);
@@ -565,7 +568,7 @@ function updateAI() {
         }
     });
 
-    // ⚽ FÍSICA MEJORADA DEL BALÓN
+    // FÍSICA DEL BALÓN
     if (!ball.holder) {
         ball.x += ball.vx;
         ball.y += ball.vy;
@@ -580,7 +583,6 @@ function updateAI() {
 
         let isAtGoalHeight = (ball.y >= 215 && ball.y <= 335);
 
-        // Rebotes en la línea de fondo fuera del marco
         if (!isAtGoalHeight) {
             if (ball.x <= 15 || ball.x >= canvas.width - 15) { 
                 ball.vx *= -0.8; 
@@ -588,14 +590,12 @@ function updateAI() {
                 ball.x = ball.x <= 15 ? 16 : canvas.width - 16;
             }
         } else {
-            // Entró a la red de la portería
             if (ball.x <= 4 || ball.x >= canvas.width - 4) { 
-                ball.vx *= -0.2; // Amortiguación de la red
+                ball.vx *= -0.2; 
                 ball.curveX = 0; 
             }
         }
 
-        // Rebotes en los postes de la portería
         if (Math.abs(ball.y - 215) < 5 || Math.abs(ball.y - 335) < 5) {
             if (Math.abs(ball.x - 15) < 5 || Math.abs(ball.x - (canvas.width - 15)) < 5) {
                 ball.vx *= -0.85;
@@ -603,7 +603,6 @@ function updateAI() {
             }
         }
 
-        // Rebote en líneas superiores e inferiores
         if (ball.y <= 15 || ball.y >= canvas.height - 15) { 
             ball.vy *= -0.8; 
             ball.curveY = 0; 
@@ -624,7 +623,6 @@ function updateTimer() {
         clearInterval(timerInterval);
         isMatchRunning = false;
         
-        // 🔁 RESETEAR POSICIONES Y ESTAMINA COMPLETA
         resetPlayersAndPositions();
 
         alert(`¡Final del Partido! Resultado: ${scoreHome} - ${scoreAway}`);
