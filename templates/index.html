@@ -17,23 +17,20 @@
             </header>
 
             <div class="cards-grid">
-                <!-- Modo 1: Simulación (ACTIVO) -->
-                <div class="card-modo active" id="card-simulacion">
+                <div class="card-modo active">
                     <div class="card-tag">Disponible</div>
                     <h2>Simulación Rápida</h2>
                     <p>Viví partidos rápidos estilo Copero con resultados instantáneos y control total de eventos.</p>
-                    <button id="btn-modo-simulacion" class="btn-primary">Comenzar Simulación</button>
+                    <button class="btn-primary btn-iniciar" data-modo="simulacion">Comenzar Simulación</button>
                 </div>
 
-                <!-- Modo 2: Carrera de Jugador (Próximamente) -->
-                <div class="card-modo disabled">
-                    <div class="card-tag muted">Próximamente</div>
+                <div class="card-modo active">
+                    <div class="card-tag">Disponible</div>
                     <h2>Carrera de Jugador</h2>
                     <p>Creá tu ficha, controlá tus atributos y jugá partidos clave en 2D estilo Haxball.</p>
-                    <button class="btn-disabled" disabled>Bloqueado</button>
+                    <button class="btn-primary btn-iniciar" data-modo="jugador">Comenzar Carrera</button>
                 </div>
 
-                <!-- Modo 3: Carrera de Manager (Próximamente) -->
                 <div class="card-modo disabled">
                     <div class="card-tag muted">Próximamente</div>
                     <h2>Carrera de Manager</h2>
@@ -43,13 +40,102 @@
             </div>
         </section>
 
-        <!-- ZONA 2: Pantalla de Modo Simulación (Lienzo Vacío por ahora) -->
-        <section id="pantalla-simulacion" class="screen hidden">
-            <button id="btn-volver-menu" class="btn-secondary">← Volver al Menú</button>
-            <div class="placeholder-content">
-                <h2>Modo Simulación Rápida</h2>
-                <p>Aquí construiremos la interfaz y lógica de este modo.</p>
+        <!-- ZONA 2: Definí tu identidad -->
+        <section id="pantalla-identidad" class="screen hidden">
+            <h1 class="titulo-pantalla">Definí tu identidad</h1>
+            
+            <div class="identidad-grid">
+                <!-- Columna 1: Identidad (Camiseta) -->
+                <div class="columna-identidad">
+                    <h3>Identidad</h3>
+                    
+                    <div class="camiseta-container" id="camiseta-box">
+                        <svg class="camiseta-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Cuerpo y Mangas -->
+                            <path class="camiseta-base" d="M 50,40 L 75,15 L 125,15 L 150,40 L 190,65 L 165,110 L 150,95 L 150,205 L 50,205 L 50,95 L 35,110 L 10,65 Z" fill="#ffffff" stroke="#222" stroke-width="3"/>
+                            <!-- Cuello -->
+                            <path class="camiseta-cuello" d="M 75,15 A 25,25 0 0,0 125,15 Z" fill="#111116"/>
+                            <!-- Bordes mangas -->
+                            <path class="camiseta-mangas" d="M 190,65 L 165,110 M 10,65 L 35,110" stroke="#111116" stroke-width="8"/>
+                        </svg>
+                        <div class="camiseta-texto">
+                            <span id="preview-apellido">APELLIDO</span>
+                            <span id="preview-numero">10</span>
+                        </div>
+                    </div>
+
+                    <div class="form-grupo-row">
+                        <div class="input-field">
+                            <label>APELLIDO</label>
+                            <input type="text" id="input-apellido" value="APELLIDO" maxlength="12">
+                        </div>
+                        <div class="input-field num-field">
+                            <label>NÚMERO</label>
+                            <input type="number" id="input-numero" value="10" min="1" max="99">
+                        </div>
+                    </div>
+
+                    <div class="pierna-selector">
+                        <label>PIERNA HÁBIL</label>
+                        <div class="toggle-pierna">
+                            <button type="button" class="btn-pierna" data-pierna="Izquierda">Izquierda</button>
+                            <button type="button" class="btn-pierna active" data-pierna="Derecha">Derecha</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna 2: Nacionalidad -->
+                <div class="columna-nacionalidad">
+                    <h3>Nacionalidad</h3>
+                    <div class="search-box">
+                        <input type="text" id="buscar-pais" placeholder="🔍 Buscar país">
+                    </div>
+                    <div class="lista-paises" id="contenedor-paises">
+                        <!-- Generado por JS -->
+                    </div>
+                </div>
+
+                <!-- Columna 3: Posición en Campo -->
+                <div class="columna-posicion">
+                    <h3>Posición</h3>
+                    <div class="campo-tactico">
+                        <div class="linea-campo area-rival"></div>
+                        <div class="linea-campo centro-campo"></div>
+                        <div class="linea-campo area-propia"></div>
+
+                        <!-- Botones de posición -->
+                        <div class="pos-row">
+                            <button class="btn-pos" data-pos="EI">EI</button>
+                            <button class="btn-pos" data-pos="DC">DC</button>
+                            <button class="btn-pos" data-pos="ED">ED</button>
+                        </div>
+                        <div class="pos-row">
+                            <button class="btn-pos" data-pos="MCO">MCO</button>
+                        </div>
+                        <div class="pos-row">
+                            <button class="btn-pos" data-pos="MI">MI</button>
+                            <button class="btn-pos active" data-pos="MC">MC</button>
+                            <button class="btn-pos" data-pos="MD">MD</button>
+                        </div>
+                        <div class="pos-row">
+                            <button class="btn-pos" data-pos="MCD">MCD</button>
+                        </div>
+                        <div class="pos-row">
+                            <button class="btn-pos" data-pos="LI">LI</button>
+                            <button class="btn-pos" data-pos="DFC">DFC</button>
+                            <button class="btn-pos" data-pos="LD">LD</button>
+                        </div>
+                        <div class="pos-row">
+                            <button class="btn-pos" data-pos="POR">POR</button>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <footer class="footer-acciones">
+                <button id="btn-volver-identidad" class="btn-secondary">Volver</button>
+                <button id="btn-confirmar-identidad" class="btn-confirmar">Confirmar identidad</button>
+            </footer>
         </section>
     </div>
 
