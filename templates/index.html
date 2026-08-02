@@ -40,9 +40,9 @@
             </div>
         </section>
 
-        <!-- ZONA 2: Definí tu identidad -->
+        <!-- ZONA 2: Crea tu perfil -->
         <section id="pantalla-identidad" class="screen hidden">
-            <h1 class="titulo-pantalla">Definí tu identidad</h1>
+            <h1 class="titulo-pantalla">Crea tu perfil</h1>
             
             <div class="identidad-grid">
                 <!-- Columna 1: Identidad (Camiseta) -->
@@ -59,27 +59,27 @@
                             <path class="camiseta-mangas" d="M 190,65 L 165,110 M 10,65 L 35,110" stroke="#111116" stroke-width="8"/>
                         </svg>
                         <div class="camiseta-texto">
-                            <span id="preview-apellido">APELLIDO</span>
-                            <span id="preview-numero">10</span>
+                            <span id="preview-apellido">RAMIREZ</span>
+                            <span id="preview-numero">13</span>
                         </div>
                     </div>
 
                     <div class="form-grupo-row">
-                        <div class="input-field">
+                        <div class="input-field app-input">
                             <label>APELLIDO</label>
-                            <input type="text" id="input-apellido" value="APELLIDO" maxlength="12">
+                            <input type="text" id="input-apellido" value="RAMIREZ" maxlength="12">
                         </div>
                         <div class="input-field num-field">
                             <label>NÚMERO</label>
-                            <input type="number" id="input-numero" value="10" min="1" max="99">
+                            <input type="number" id="input-numero" value="13" min="1" max="99">
                         </div>
                     </div>
 
                     <div class="pierna-selector">
                         <label>PIERNA HÁBIL</label>
                         <div class="toggle-pierna">
-                            <button type="button" class="btn-pierna" data-pierna="Izquierda">Izquierda</button>
-                            <button type="button" class="btn-pierna active" data-pierna="Derecha">Derecha</button>
+                            <button type="button" class="btn-pierna active" data-pierna="Izquierda">Izquierda</button>
+                            <button type="button" class="btn-pierna" data-pierna="Derecha">Derecha</button>
                         </div>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                         <input type="text" id="buscar-pais" placeholder="🔍 Buscar país">
                     </div>
                     <div class="lista-paises" id="contenedor-paises">
-                        <!-- Generado por JS -->
+                        <!-- Generado por JS con banderas SVG -->
                     </div>
                 </div>
 
@@ -101,6 +101,7 @@
                     <div class="campo-tactico">
                         <div class="linea-campo area-rival"></div>
                         <div class="linea-campo centro-campo"></div>
+                        <div class="linea-campo circulo-central"></div>
                         <div class="linea-campo area-propia"></div>
 
                         <!-- Botones de posición -->
@@ -110,11 +111,11 @@
                             <button class="btn-pos" data-pos="ED">ED</button>
                         </div>
                         <div class="pos-row">
-                            <button class="btn-pos" data-pos="MCO">MCO</button>
+                            <button class="btn-pos active" data-pos="MCO">MCO</button>
                         </div>
                         <div class="pos-row">
                             <button class="btn-pos" data-pos="MI">MI</button>
-                            <button class="btn-pos active" data-pos="MC">MC</button>
+                            <button class="btn-pos" data-pos="MC">MC</button>
                             <button class="btn-pos" data-pos="MD">MD</button>
                         </div>
                         <div class="pos-row">

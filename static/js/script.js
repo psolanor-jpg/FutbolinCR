@@ -1,35 +1,35 @@
-// Lista de los países solicitados con sus colores (Camiseta / Texto)
+// Lista de países solicitados con banderas SVG oficiales y paleta de colores (Camiseta / Texto)
 const PAISES = [
-    { nombre: 'Brasil', flag: '🇧🇷', color: '#FFE100', text: '#000000' },
-    { nombre: 'Alemania', flag: '🇩🇪', color: '#FFFFFF', text: '#000000' },
-    { nombre: 'Argentina', flag: '🇦🇷', color: '#75AADB', text: '#FFFFFF' },
-    { nombre: 'Italia', flag: '🇮🇹', color: '#004BB6', text: '#FFFFFF' },
-    { nombre: 'Francia', flag: '🇫🇷', color: '#002395', text: '#FFFFFF' },
-    { nombre: 'España', flag: '🇪🇸', color: '#C60B1E', text: '#FFE100' },
-    { nombre: 'Inglaterra', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', color: '#FFFFFF', text: '#CF081F' },
-    { nombre: 'Países Bajos', flag: '🇳🇱', color: '#F65200', text: '#FFFFFF' },
-    { nombre: 'Uruguay', flag: '🇺🇾', color: '#55B5E5', text: '#FFFFFF' },
-    { nombre: 'Portugal', flag: '🇵🇹', color: '#046A38', text: '#FFFFFF' },
-    { nombre: 'Bélgica', flag: '🇧🇪', color: '#E30613', text: '#FFE100' },
-    { nombre: 'Croacia', flag: '🇭🇷', color: '#FF0000', text: '#FFFFFF' },
-    { nombre: 'República Checa', flag: '🇨🇿', color: '#D7141A', text: '#FFFFFF' },
-    { nombre: 'Hungría', flag: '🇭🇺', color: '#477050', text: '#FFFFFF' },
-    { nombre: 'Dinamarca', flag: '🇩🇰', color: '#C8102E', text: '#FFFFFF' },
-    { nombre: 'Colombia', flag: '🇨🇴', color: '#FCD116', text: '#003893' },
-    { nombre: 'México', flag: '🇲🇽', color: '#006847', text: '#FFFFFF' },
-    { nombre: 'Polonia', flag: '🇵🇱', color: '#DC143C', text: '#FFFFFF' },
-    { nombre: 'Suecia', flag: '🇸🇪', color: '#FECC00', text: '#006AA7' },
-    { nombre: 'Japón', flag: '🇯🇵', color: '#000555', text: '#FFFFFF' }
+    { nombre: 'Brasil', code: 'br', color: '#FFE100', text: '#000000' },
+    { nombre: 'Alemania', code: 'de', color: '#FFFFFF', text: '#000000' },
+    { nombre: 'Argentina', code: 'ar', color: '#75AADB', text: '#FFFFFF' },
+    { nombre: 'Italia', code: 'it', color: '#004BB6', text: '#FFFFFF' },
+    { nombre: 'Francia', code: 'fr', color: '#002395', text: '#FFFFFF' },
+    { nombre: 'España', code: 'es', color: '#C60B1E', text: '#FFE100' },
+    { nombre: 'Inglaterra', code: 'gb-eng', color: '#FFFFFF', text: '#CF081F' },
+    { nombre: 'Países Bajos', code: 'nl', color: '#F65200', text: '#FFFFFF' },
+    { nombre: 'Uruguay', code: 'uy', color: '#55B5E5', text: '#FFFFFF' },
+    { nombre: 'Portugal', code: 'pt', color: '#046A38', text: '#FFFFFF' },
+    { nombre: 'Bélgica', code: 'be', color: '#E30613', text: '#FFE100' },
+    { nombre: 'Croacia', code: 'hr', color: '#FF0000', text: '#FFFFFF' },
+    { nombre: 'República Checa', code: 'cz', color: '#D7141A', text: '#FFFFFF' },
+    { nombre: 'Hungría', code: 'hu', color: '#477050', text: '#FFFFFF' },
+    { nombre: 'Dinamarca', code: 'dk', color: '#C8102E', text: '#FFFFFF' },
+    { nombre: 'Colombia', code: 'co', color: '#FCD116', text: '#003893' },
+    { nombre: 'México', code: 'mx', color: '#006847', text: '#FFFFFF' },
+    { nombre: 'Polonia', code: 'pl', color: '#DC143C', text: '#FFFFFF' },
+    { nombre: 'Suecia', code: 'se', color: '#FECC00', text: '#006AA7' },
+    { nombre: 'Japón', code: 'jp', color: '#000555', text: '#FFFFFF' }
 ];
 
-// Estado de la selección
-let estadoIdentidad = {
+// Estado global de la selección
+let estadoPerfil = {
     modoJuego: 'simulacion',
-    apellido: 'APELLIDO',
-    numero: '10',
-    pierna: 'Derecha',
+    apellido: 'RAMIREZ',
+    numero: '13',
+    pierna: 'Izquierda',
     pais: PAISES[1], // Alemania por defecto
-    posicion: 'MC'
+    posicion: 'MCO'
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -38,19 +38,24 @@ document.addEventListener('DOMContentLoaded', () => {
     actualizarCamiseta();
 });
 
-// Renderizar lista de países
+// Renderizar lista de países con banderas en SVG
 function initNacionalidades() {
     const contenedor = document.getElementById('contenedor-paises');
+    if (!contenedor) return;
+    
     contenedor.innerHTML = '';
 
     PAISES.forEach(p => {
         const div = document.createElement('div');
-        div.className = `item-pais ${p.nombre === estadoIdentidad.pais.nombre ? 'active' : ''}`;
-        div.innerHTML = `<span>${p.flag}</span> <span>${p.nombre}</span>`;
+        div.className = `item-pais ${p.nombre === estadoPerfil.pais.nombre ? 'active' : ''}`;
+        div.innerHTML = `
+            <img class="img-bandera" src="https://flagcdn.com/w40/${p.code}.png" alt="${p.nombre}">
+            <span>${p.nombre}</span>
+        `;
         div.addEventListener('click', () => {
             document.querySelectorAll('.item-pais').forEach(el => el.classList.remove('active'));
             div.classList.add('active');
-            estadoIdentidad.pais = p;
+            estadoPerfil.pais = p;
             actualizarCamiseta();
         });
         contenedor.appendChild(div);
@@ -58,7 +63,7 @@ function initNacionalidades() {
 }
 
 // Filtro de búsqueda de país
-document.getElementById('buscar-pais').addEventListener('input', (e) => {
+document.getElementById('buscar-pais')?.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase();
     document.querySelectorAll('.item-pais').forEach(item => {
         const texto = item.innerText.toLowerCase();
@@ -67,66 +72,68 @@ document.getElementById('buscar-pais').addEventListener('input', (e) => {
 });
 
 function initEventos() {
-    // Abrir pantalla de identidad desde el menú
+    // Abrir pantalla de creación de perfil desde el menú
     document.querySelectorAll('.btn-iniciar').forEach(btn => {
         btn.addEventListener('click', () => {
-            estadoIdentidad.modoJuego = btn.dataset.modo;
-            document.getElementById('menu-principal').classList.add('hidden');
-            document.getElementById('pantalla-identidad').classList.remove('hidden');
+            estadoPerfil.modoJuego = btn.dataset.modo;
+            document.getElementById('menu-principal')?.classList.add('hidden');
+            document.getElementById('pantalla-identidad')?.classList.remove('hidden');
         });
     });
 
-    // Volver al menú
-    document.getElementById('btn-volver-identidad').addEventListener('click', () => {
-        document.getElementById('pantalla-identidad').classList.add('hidden');
-        document.getElementById('menu-principal').classList.remove('hidden');
+    // Volver al menú principal
+    document.getElementById('btn-volver-identidad')?.addEventListener('click', () => {
+        document.getElementById('pantalla-identidad')?.classList.add('hidden');
+        document.getElementById('menu-principal')?.classList.remove('hidden');
     });
 
-    // Inputs en tiempo real
+    // Actualización de texto e inputs en tiempo real
     const inputApellido = document.getElementById('input-apellido');
     const inputNumero = document.getElementById('input-numero');
 
-    inputApellido.addEventListener('input', (e) => {
-        estadoIdentidad.apellido = e.target.value.toUpperCase() || 'APELLIDO';
-        document.getElementById('preview-apellido').innerText = estadoIdentidad.apellido;
+    inputApellido?.addEventListener('input', (e) => {
+        estadoPerfil.apellido = e.target.value.toUpperCase() || 'APELLIDO';
+        const preview = document.getElementById('preview-apellido');
+        if (preview) preview.innerText = estadoPerfil.apellido;
     });
 
-    inputNumero.addEventListener('input', (e) => {
-        estadoIdentidad.numero = e.target.value || '10';
-        document.getElementById('preview-numero').innerText = estadoIdentidad.numero;
+    inputNumero?.addEventListener('input', (e) => {
+        estadoPerfil.numero = e.target.value || '10';
+        const preview = document.getElementById('preview-numero');
+        if (preview) preview.innerText = estadoPerfil.numero;
     });
 
-    // Pierna hábil
+    // Selección de Pierna hábil
     document.querySelectorAll('.btn-pierna').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.btn-pierna').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            estadoIdentidad.pierna = btn.dataset.pierna;
+            estadoPerfil.pierna = btn.dataset.pierna;
         });
     });
 
-    // Seleccionar Posición
+    // Seleccionar Posición táctica
     document.querySelectorAll('.btn-pos').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.btn-pos').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            estadoIdentidad.posicion = btn.dataset.pos;
+            estadoPerfil.posicion = btn.dataset.pos;
         });
     });
 
-    // Confirmar
-    document.getElementById('btn-confirmar-identidad').addEventListener('click', () => {
-        alert(`¡Identidad Creada!\nModo: ${estadoIdentidad.modoJuego}\nJugador: ${estadoIdentidad.apellido} (#${estadoIdentidad.numero})\nPaís: ${estadoIdentidad.pais.nombre}\nPosición: ${estadoIdentidad.posicion}`);
+    // Confirmar Perfil Creado
+    document.getElementById('btn-confirmar-identidad')?.addEventListener('click', () => {
+        alert(`¡Perfil Creado!\nModo: ${estadoPerfil.modoJuego}\nJugador: ${estadoPerfil.apellido} (#${estadoPerfil.numero})\nPaís: ${estadoPerfil.pais.nombre}\nPosición: ${estadoPerfil.posicion}`);
     });
 }
 
-// Actualizar colores de la Camiseta dinámicamente según el País
+// Actualizar colores dinámicos de la Camiseta
 function actualizarCamiseta() {
     const baseSvg = document.querySelector('.camiseta-base');
     const txtApellido = document.getElementById('preview-apellido');
     const txtNumero = document.getElementById('preview-numero');
 
-    baseSvg.setAttribute('fill', estadoIdentidad.pais.color);
-    txtApellido.style.color = estadoIdentidad.pais.text;
-    txtNumero.style.color = estadoIdentidad.pais.text;
+    if (baseSvg) baseSvg.setAttribute('fill', estadoPerfil.pais.color);
+    if (txtApellido) txtApellido.style.color = estadoPerfil.pais.text;
+    if (txtNumero) txtNumero.style.color = estadoPerfil.pais.text;
 }
