@@ -138,6 +138,121 @@
                 <button id="btn-confirmar-identidad" class="btn-confirmar">Confirmar identidad</button>
             </footer>
         </section>
+
+        <!-- ZONA 3: Hub de Carrera / Decisión de Ofertas -->
+        <section id="pantalla-carrera" class="screen hidden">
+            <div class="carrera-layout">
+                
+                <!-- Panel Principal Izquierdo: Ficha + Ofertas de Cantera -->
+                <div class="panel-principal-carrera">
+                    
+                    <div class="card-ficha-jugador">
+                        <div class="badge-ovr">
+                            <span class="lbl-ovr">OVR</span>
+                            <span class="val-ovr" id="carrera-ovr">50</span>
+                        </div>
+                        
+                        <div class="detalles-jugador">
+                            <div class="row-tags">
+                                <span class="tag-meta" id="carrera-pais-tag"><img src="" class="img-bandera-sm" id="carrera-flag"> ARG</span>
+                                <span class="tag-meta highlight" id="carrera-pos-tag">#10 MCD</span>
+                            </div>
+                            <h2 class="nombre-club" id="carrera-club-actual">Libre</h2>
+                        </div>
+
+                        <div class="stats-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">EDAD</span>
+                                <span class="meta-value" id="carrera-edad">16</span>
+                            </div>
+                            <div class="meta-item text-right">
+                                <span class="meta-label">VALOR</span>
+                                <span class="meta-value val-dinero" id="carrera-valor">€100K</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-stats-rapidas">
+                        <div class="stat-box">
+                            <span class="stat-lbl">PJ</span>
+                            <span class="stat-num">0</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-lbl">GLS</span>
+                            <span class="stat-num">0</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-lbl">AST</span>
+                            <span class="stat-num">0</span>
+                        </div>
+                    </div>
+
+                    <div class="box-vitrina">
+                        <span class="vitrina-icon">🏆</span>
+                        <span class="vitrina-texto">VITRINA VACÍA</span>
+                    </div>
+
+                    <div class="seccion-ofertas">
+                        <div class="ofertas-header">
+                            <h3>Oferta de cantera</h3>
+                            <p>Tres clubes quieren sumarte a su proyecto juvenil. Elegí dónde empieza tu carrera.</p>
+                        </div>
+
+                        <div class="cards-ofertas-grid" id="contenedor-ofertas">
+                            <!-- Inyectado dinámicamente por JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel Lateral Retráctil: Trayectoria y Cancha Futura -->
+                <aside class="panel-drawer retraido" id="drawer-trayectoria">
+                    <button class="btn-toggle-drawer" id="btn-toggle-drawer">
+                        <span class="drawer-icon">📜</span>
+                        <span class="drawer-text">Trayectoria & Cancha</span>
+                        <span class="chevron-icon">◀</span>
+                    </button>
+
+                    <div class="drawer-content">
+                        <div class="timeline-header-labels">
+                            <span>EDAD</span>
+                            <span>CLUB</span>
+                            <div class="right-labels">
+                                <span>OVR</span>
+                            </div>
+                        </div>
+
+                        <div class="timeline-row active-row">
+                            <div class="col-edad">16</div>
+                            <div class="col-club">
+                                <span class="icon-status">❓</span>
+                                <span class="text-status" id="timeline-status-club">Eligiendo club...</span>
+                            </div>
+                            <div class="col-stats-right">
+                                <span class="badge-ovr-sm">50</span>
+                            </div>
+                        </div>
+
+                        <div class="timeline-row disabled-row"><span class="col-edad">18</span></div>
+                        <div class="timeline-row disabled-row"><span class="col-edad">20</span></div>
+                        <div class="timeline-row disabled-row"><span class="col-edad">22</span></div>
+                        <div class="timeline-row disabled-row"><span class="col-edad">24</span></div>
+                        <div class="timeline-row disabled-row"><span class="col-edad">26</span></div>
+                        <div class="timeline-row disabled-row"><span class="col-edad">28</span></div>
+                        <div class="timeline-row disabled-row"><span class="col-edad">30</span></div>
+
+                        <div class="placeholder-cancha" id="contenedor-cancha-futura">
+                            <p class="text-muted">Espacio reservado para la cancha táctica ⚽</p>
+                        </div>
+
+                        <div class="timeline-footer-nac">
+                            <img src="" id="timeline-flag-nac" class="img-bandera-sm">
+                            <span id="timeline-pais-nombre">País</span>
+                        </div>
+                    </div>
+                </aside>
+
+            </div>
+        </section>
     </div>
 
     <script src="../static/js/script.js"></script>
