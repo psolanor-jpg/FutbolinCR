@@ -20,21 +20,15 @@
             <div class="cards-grid">
                 <div class="card-modo active">
                     <div class="card-tag">Disponible</div>
-                    <h2>Simulación Rápida</h2>
-                    <p>Partidos veloces con resultados al instante.</p>
-                    <button class="btn-primary btn-iniciar" data-modo="simulacion">Comenzar Simulación</button>
-                </div>
-
-                <div class="card-modo active">
-                    <div class="card-tag">Disponible</div>
                     <h2>Carrera de Jugador</h2>
                     <p>Creá tu futbolista, tomá decisiones de contrato y saltá a la cancha.</p>
                     <button class="btn-primary btn-iniciar" data-modo="jugador">Comenzar Carrera</button>
+                    <button class="btn-secondary hidden" id="btn-cargar-carrera" style="margin-top: 10px;">Continuar Carrera</button>
                 </div>
             </div>
         </section>
 
-        <!-- ZONA 2: Crea tu perfil -->
+        <!-- ZONA 2: Creación de Personaje -->
         <section id="pantalla-identidad" class="screen hidden">
             <h1 class="titulo-pantalla">Creación de Personaje</h1>
             
@@ -103,7 +97,7 @@
             </footer>
         </section>
 
-        <!-- ZONA 3.1: Pantalla Intermedia de Elección de Ofertas -->
+        <!-- ZONA 3.1: Selección Inicial de Ofertas -->
         <section id="pantalla-ofertas" class="screen hidden">
             <header class="ofertas-intro">
                 <span class="badge">Oportunidad Profesional</span>
@@ -111,12 +105,10 @@
                 <p>Elegí el club donde firmarás tu primer contrato profesional a los 16 años.</p>
             </header>
 
-            <div class="cards-ofertas-grid" id="contenedor-ofertas-iniciales">
-                <!-- Inyectado dinámicamente por JS -->
-            </div>
+            <div class="cards-ofertas-grid" id="contenedor-ofertas-iniciales"></div>
         </section>
 
-        <!-- ZONA 3.2: Hub de Carrera + Cancha de Fútbol Principal -->
+        <!-- ZONA 3.2: Hub de Carrera + Cancha de Fútbol -->
         <section id="pantalla-carrera" class="screen hidden">
             <div class="carrera-header-bar">
                 <div class="jugador-info-bar">
@@ -131,34 +123,28 @@
             </div>
 
             <div class="carrera-main-layout">
-                <!-- Cancha Táctica Diseñada -->
                 <div class="cancha-contenedor">
                     <div class="cancha-futbol">
-                        <!-- Líneas del Campo -->
                         <div class="linea-banda-superior"></div>
                         <div class="linea-banda-inferior"></div>
                         <div class="linea-media"></div>
                         <div class="circulo-central"></div>
                         <div class="punto-central"></div>
 
-                        <!-- Área Izquierda -->
                         <div class="area-grande area-izq"></div>
                         <div class="area-chica area-chica-izq"></div>
                         <div class="arco arco-izq"></div>
 
-                        <!-- Área Derecha -->
                         <div class="area-grande area-der"></div>
                         <div class="area-chica area-chica-der"></div>
                         <div class="arco arco-der"></div>
 
-                        <!-- Ficha de Posición del Jugador en la Cancha -->
                         <div class="token-jugador-cancha" id="token-cancha">
                             <span id="token-pos">MCO</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Panel Lateral de Stats y Acciones -->
                 <aside class="panel-stats-carrera">
                     <div class="card-stat-destacada">
                         <span>MEDIA GENERAL (OVR)</span>
@@ -166,18 +152,47 @@
                     </div>
 
                     <div class="mini-grid-stats">
-                        <div class="m-box"><span>EDAD</span><strong>16</strong></div>
-                        <div class="m-box"><span>VALOR</span><strong>€100K</strong></div>
-                        <div class="m-box"><span>PJ</span><strong>0</strong></div>
-                        <div class="m-box"><span>GOLES</span><strong>0</strong></div>
+                        <div class="m-box"><span>EDAD</span><strong id="carrera-edad">16</strong></div>
+                        <div class="m-box"><span>VALOR</span><strong id="carrera-valor">€100K</strong></div>
+                        <div class="m-box"><span>PJ</span><strong id="stat-pj">0</strong></div>
+                        <div class="m-box"><span>GOLES</span><strong id="stat-goles">0</strong></div>
                     </div>
 
                     <button class="btn-primary btn-jugar-partido" id="btn-jugar-partido">
                         ⚽ Jugar Próximo Partido
                     </button>
+                    <button class="btn-secondary" id="btn-toggle-drawer" style="margin-top: 6px;">Ver Ofertas / Panel</button>
+                    <button class="btn-secondary" id="btn-reset-partida" style="margin-top: 6px;">Reiniciar Carrera</button>
                 </aside>
             </div>
+
+            <!-- Drawer Deslizante Lateral -->
+            <div id="drawer-trayectoria" class="drawer-panel retraido">
+                <h3>Cambiar de Club / Ofertas</h3>
+                <p class="subtitle-drawer">Mánager de Contratos:</p>
+                <div class="cards-ofertas-grid" id="contenedor-ofertas-drawer"></div>
+                
+                <hr style="border-color: #222431; margin: 15px 0;">
+                <div class="timeline-info">
+                    <div class="t-row"><img id="timeline-flag-nac" class="img-bandera-sm"> <span id="timeline-pais-nombre">-</span></div>
+                    <div class="t-row"><span>Estado:</span> <strong id="timeline-status-club">Libre</strong></div>
+                </div>
+            </div>
         </section>
+
+        <!-- MODAL SIMULADOR -->
+        <div id="modal-partido" class="modal-overlay hidden">
+            <div class="modal-content">
+                <h2>Simulando Partido...</h2>
+                <div class="marcador-box">
+                    <span id="sim-local">Tu Club</span>
+                    <span id="sim-resultado">0 - 0</span>
+                    <span id="sim-visita">Rival FC</span>
+                </div>
+                <div class="log-partido" id="sim-log"></div>
+                <button class="btn-primary hidden" id="btn-cerrar-partido">Continuar</button>
+            </div>
+        </div>
 
     </div>
 
