@@ -8,54 +8,44 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- ZONA 1: Menú de Selección de Modos -->
+        
+        <!-- ZONA 1: Menú Principal -->
         <section id="menu-principal" class="screen">
             <header class="menu-header">
                 <span class="badge">FutbolinCR</span>
                 <h1>Elegí tu modo de juego</h1>
-                <p class="subtitle">Tomá decisiones clave y dejá que el destino te lleve a una trayectoria única de títulos y estadísticas.</p>
+                <p class="subtitle">Construí tu trayectoria deportiva partido a partido.</p>
             </header>
 
             <div class="cards-grid">
                 <div class="card-modo active">
                     <div class="card-tag">Disponible</div>
                     <h2>Simulación Rápida</h2>
-                    <p>Viví partidos rápidos estilo Copero con resultados instantáneos y control total de eventos.</p>
+                    <p>Partidos veloces con resultados al instante.</p>
                     <button class="btn-primary btn-iniciar" data-modo="simulacion">Comenzar Simulación</button>
                 </div>
 
                 <div class="card-modo active">
                     <div class="card-tag">Disponible</div>
                     <h2>Carrera de Jugador</h2>
-                    <p>Creá tu ficha, controlá tus atributos y jugá partidos clave en 2D estilo Haxball.</p>
+                    <p>Creá tu futbolista, tomá decisiones de contrato y saltá a la cancha.</p>
                     <button class="btn-primary btn-iniciar" data-modo="jugador">Comenzar Carrera</button>
-                </div>
-
-                <div class="card-modo disabled">
-                    <div class="card-tag muted">Próximamente</div>
-                    <h2>Carrera de Manager</h2>
-                    <p>Dirigí al club de tus amores, gestioná alineaciones y conquistá la liga local.</p>
-                    <button class="btn-disabled" disabled>Bloqueado</button>
                 </div>
             </div>
         </section>
 
         <!-- ZONA 2: Crea tu perfil -->
         <section id="pantalla-identidad" class="screen hidden">
-            <h1 class="titulo-pantalla">Crea tu perfil</h1>
+            <h1 class="titulo-pantalla">Creación de Personaje</h1>
             
             <div class="identidad-grid">
                 <!-- Columna 1: Identidad (Camiseta) -->
                 <div class="columna-identidad">
-                    <h3>Identidad</h3>
-                    
+                    <h3>Camiseta</h3>
                     <div class="camiseta-container" id="camiseta-box">
                         <svg class="camiseta-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Cuerpo y Mangas -->
                             <path class="camiseta-base" d="M 50,40 L 75,15 L 125,15 L 150,40 L 190,65 L 165,110 L 150,95 L 150,205 L 50,205 L 50,95 L 35,110 L 10,65 Z" fill="#ffffff" stroke="#222" stroke-width="3"/>
-                            <!-- Cuello -->
                             <path class="camiseta-cuello" d="M 75,15 A 25,25 0 0,0 125,15 Z" fill="#111116"/>
-                            <!-- Bordes mangas -->
                             <path class="camiseta-mangas" d="M 190,65 L 165,110 M 10,65 L 35,110" stroke="#111116" stroke-width="8"/>
                         </svg>
                         <div class="camiseta-texto">
@@ -70,7 +60,7 @@
                             <input type="text" id="input-apellido" value="RAMIREZ" maxlength="12">
                         </div>
                         <div class="input-field num-field">
-                            <label>NÚMERO</label>
+                            <label>Nº</label>
                             <input type="number" id="input-numero" value="13" min="1" max="99">
                         </div>
                     </div>
@@ -90,169 +80,105 @@
                     <div class="search-box">
                         <input type="text" id="buscar-pais" placeholder="🔍 Buscar país">
                     </div>
-                    <div class="lista-paises" id="contenedor-paises">
-                        <!-- Generado por JS con banderas SVG -->
-                    </div>
+                    <div class="lista-paises" id="contenedor-paises"></div>
                 </div>
 
-                <!-- Columna 3: Posición en Campo -->
+                <!-- Columna 3: Posición -->
                 <div class="columna-posicion">
-                    <h3>Posición</h3>
-                    <div class="campo-tactico">
-                        <div class="linea-campo area-rival"></div>
-                        <div class="linea-campo centro-campo"></div>
-                        <div class="linea-campo circulo-central"></div>
-                        <div class="linea-campo area-propia"></div>
-
-                        <!-- Botones de posición -->
-                        <div class="pos-row">
-                            <button class="btn-pos" data-pos="EI">EI</button>
-                            <button class="btn-pos" data-pos="DC">DC</button>
-                            <button class="btn-pos" data-pos="ED">ED</button>
-                        </div>
-                        <div class="pos-row">
-                            <button class="btn-pos active" data-pos="MCO">MCO</button>
-                        </div>
-                        <div class="pos-row">
-                            <button class="btn-pos" data-pos="MI">MI</button>
-                            <button class="btn-pos" data-pos="MC">MC</button>
-                            <button class="btn-pos" data-pos="MD">MD</button>
-                        </div>
-                        <div class="pos-row">
-                            <button class="btn-pos" data-pos="MCD">MCD</button>
-                        </div>
-                        <div class="pos-row">
-                            <button class="btn-pos" data-pos="LI">LI</button>
-                            <button class="btn-pos" data-pos="DFC">DFC</button>
-                            <button class="btn-pos" data-pos="LD">LD</button>
-                        </div>
-                        <div class="pos-row">
-                            <button class="btn-pos" data-pos="POR">POR</button>
-                        </div>
+                    <h3>Posición Favorita</h3>
+                    <div class="campo-tactico-mini">
+                        <div class="pos-row"><button class="btn-pos" data-pos="EI">EI</button><button class="btn-pos" data-pos="DC">DC</button><button class="btn-pos" data-pos="ED">ED</button></div>
+                        <div class="pos-row"><button class="btn-pos active" data-pos="MCO">MCO</button></div>
+                        <div class="pos-row"><button class="btn-pos" data-pos="MI">MI</button><button class="btn-pos" data-pos="MC">MC</button><button class="btn-pos" data-pos="MD">MD</button></div>
+                        <div class="pos-row"><button class="btn-pos" data-pos="MCD">MCD</button></div>
+                        <div class="pos-row"><button class="btn-pos" data-pos="LI">LI</button><button class="btn-pos" data-pos="DFC">DFC</button><button class="btn-pos" data-pos="LD">LD</button></div>
+                        <div class="pos-row"><button class="btn-pos" data-pos="POR">POR</button></div>
                     </div>
                 </div>
             </div>
 
             <footer class="footer-acciones">
                 <button id="btn-volver-identidad" class="btn-secondary">Volver</button>
-                <button id="btn-confirmar-identidad" class="btn-confirmar">Confirmar identidad</button>
+                <button id="btn-confirmar-identidad" class="btn-confirmar">Buscar Ofertas ➔</button>
             </footer>
         </section>
 
-        <!-- ZONA 3: Hub de Carrera / Decisión de Ofertas -->
+        <!-- ZONA 3.1: Pantalla Intermedia de Elección de Ofertas -->
+        <section id="pantalla-ofertas" class="screen hidden">
+            <header class="ofertas-intro">
+                <span class="badge">Oportunidad Profesional</span>
+                <h1>Ofertas Iniciales de Cantera</h1>
+                <p>Elegí el club donde firmarás tu primer contrato profesional a los 16 años.</p>
+            </header>
+
+            <div class="cards-ofertas-grid" id="contenedor-ofertas-iniciales">
+                <!-- Inyectado dinámicamente por JS -->
+            </div>
+        </section>
+
+        <!-- ZONA 3.2: Hub de Carrera + Cancha de Fútbol Principal -->
         <section id="pantalla-carrera" class="screen hidden">
-            <div class="carrera-layout">
-                
-                <!-- Panel Principal Izquierdo: Ficha + Ofertas de Cantera -->
-                <div class="panel-principal-carrera">
-                    
-                    <div class="card-ficha-jugador">
-                        <div class="badge-ovr">
-                            <span class="lbl-ovr">OVR</span>
-                            <span class="val-ovr" id="carrera-ovr">50</span>
-                        </div>
-                        
-                        <div class="detalles-jugador">
-                            <div class="row-tags">
-                                <span class="tag-meta" id="carrera-pais-tag"><img src="" class="img-bandera-sm" id="carrera-flag"> ARG</span>
-                                <span class="tag-meta highlight" id="carrera-pos-tag">#10 MCD</span>
-                            </div>
-                            <h2 class="nombre-club" id="carrera-club-actual">Libre</h2>
-                        </div>
+            <div class="carrera-header-bar">
+                <div class="jugador-info-bar">
+                    <img src="" class="img-bandera-sm" id="carrera-flag">
+                    <span class="nombre-jugador-bar" id="carrera-nombre-bar">RAMIREZ</span>
+                    <span class="badge-pos" id="carrera-pos-bar">MCO</span>
+                </div>
+                <div class="club-info-bar">
+                    <span class="lbl-contrato">CLUB ACTUAL</span>
+                    <span class="val-club" id="carrera-club-bar">Sin Club</span>
+                </div>
+            </div>
 
-                        <div class="stats-meta">
-                            <div class="meta-item">
-                                <span class="meta-label">EDAD</span>
-                                <span class="meta-value" id="carrera-edad">16</span>
-                            </div>
-                            <div class="meta-item text-right">
-                                <span class="meta-label">VALOR</span>
-                                <span class="meta-value val-dinero" id="carrera-valor">€100K</span>
-                            </div>
-                        </div>
-                    </div>
+            <div class="carrera-main-layout">
+                <!-- Cancha Táctica Diseñada -->
+                <div class="cancha-contenedor">
+                    <div class="cancha-futbol">
+                        <!-- Líneas del Campo -->
+                        <div class="linea-banda-superior"></div>
+                        <div class="linea-banda-inferior"></div>
+                        <div class="linea-media"></div>
+                        <div class="circulo-central"></div>
+                        <div class="punto-central"></div>
 
-                    <div class="grid-stats-rapidas">
-                        <div class="stat-box">
-                            <span class="stat-lbl">PJ</span>
-                            <span class="stat-num">0</span>
-                        </div>
-                        <div class="stat-box">
-                            <span class="stat-lbl">GLS</span>
-                            <span class="stat-num">0</span>
-                        </div>
-                        <div class="stat-box">
-                            <span class="stat-lbl">AST</span>
-                            <span class="stat-num">0</span>
-                        </div>
-                    </div>
+                        <!-- Área Izquierda -->
+                        <div class="area-grande area-izq"></div>
+                        <div class="area-chica area-chica-izq"></div>
+                        <div class="arco arco-izq"></div>
 
-                    <div class="box-vitrina">
-                        <span class="vitrina-icon">🏆</span>
-                        <span class="vitrina-texto">VITRINA VACÍA</span>
-                    </div>
+                        <!-- Área Derecha -->
+                        <div class="area-grande area-der"></div>
+                        <div class="area-chica area-chica-der"></div>
+                        <div class="arco arco-der"></div>
 
-                    <div class="seccion-ofertas">
-                        <div class="ofertas-header">
-                            <h3>Oferta de cantera</h3>
-                            <p>Tres clubes quieren sumarte a su proyecto juvenil. Elegí dónde empieza tu carrera.</p>
-                        </div>
-
-                        <div class="cards-ofertas-grid" id="contenedor-ofertas">
-                            <!-- Inyectado dinámicamente por JS -->
+                        <!-- Ficha de Posición del Jugador en la Cancha -->
+                        <div class="token-jugador-cancha" id="token-cancha">
+                            <span id="token-pos">MCO</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Panel Lateral Retráctil: Trayectoria y Cancha Futura -->
-                <aside class="panel-drawer retraido" id="drawer-trayectoria">
-                    <button class="btn-toggle-drawer" id="btn-toggle-drawer">
-                        <span class="drawer-icon">📜</span>
-                        <span class="drawer-text">Trayectoria & Cancha</span>
-                        <span class="chevron-icon">◀</span>
-                    </button>
-
-                    <div class="drawer-content">
-                        <div class="timeline-header-labels">
-                            <span>EDAD</span>
-                            <span>CLUB</span>
-                            <div class="right-labels">
-                                <span>OVR</span>
-                            </div>
-                        </div>
-
-                        <div class="timeline-row active-row">
-                            <div class="col-edad">16</div>
-                            <div class="col-club">
-                                <span class="icon-status">❓</span>
-                                <span class="text-status" id="timeline-status-club">Eligiendo club...</span>
-                            </div>
-                            <div class="col-stats-right">
-                                <span class="badge-ovr-sm">50</span>
-                            </div>
-                        </div>
-
-                        <div class="timeline-row disabled-row"><span class="col-edad">18</span></div>
-                        <div class="timeline-row disabled-row"><span class="col-edad">20</span></div>
-                        <div class="timeline-row disabled-row"><span class="col-edad">22</span></div>
-                        <div class="timeline-row disabled-row"><span class="col-edad">24</span></div>
-                        <div class="timeline-row disabled-row"><span class="col-edad">26</span></div>
-                        <div class="timeline-row disabled-row"><span class="col-edad">28</span></div>
-                        <div class="timeline-row disabled-row"><span class="col-edad">30</span></div>
-
-                        <div class="placeholder-cancha" id="contenedor-cancha-futura">
-                            <p class="text-muted">Espacio reservado para la cancha táctica ⚽</p>
-                        </div>
-
-                        <div class="timeline-footer-nac">
-                            <img src="" id="timeline-flag-nac" class="img-bandera-sm">
-                            <span id="timeline-pais-nombre">País</span>
-                        </div>
+                <!-- Panel Lateral de Stats y Acciones -->
+                <aside class="panel-stats-carrera">
+                    <div class="card-stat-destacada">
+                        <span>MEDIA GENERAL (OVR)</span>
+                        <h2 id="carrera-ovr">50</h2>
                     </div>
-                </aside>
 
+                    <div class="mini-grid-stats">
+                        <div class="m-box"><span>EDAD</span><strong>16</strong></div>
+                        <div class="m-box"><span>VALOR</span><strong>€100K</strong></div>
+                        <div class="m-box"><span>PJ</span><strong>0</strong></div>
+                        <div class="m-box"><span>GOLES</span><strong>0</strong></div>
+                    </div>
+
+                    <button class="btn-primary btn-jugar-partido" id="btn-jugar-partido">
+                        ⚽ Jugar Próximo Partido
+                    </button>
+                </aside>
             </div>
         </section>
+
     </div>
 
     <script src="../static/js/script.js"></script>
