@@ -1,142 +1,58 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Fútbol 2D</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FutbolinCR</title>
+    <link rel="stylesheet" href="../static/css/style.css">
 </head>
 <body>
+    <div class="app-container">
+        <!-- ZONA 1: Menú de Selección de Modos -->
+        <section id="menu-principal" class="screen">
+            <header class="menu-header">
+                <span class="badge">FutbolinCR</span>
+                <h1>Elegí tu modo de juego</h1>
+                <p class="subtitle">Tomá decisiones clave y dejá que el destino te lleve a una trayectoria única de títulos y estadísticas.</p>
+            </header>
 
-  <div class="game-container">
-    
-    <!-- PANTALLA 1: CREACIÓN DE PERSONAJE -->
-    <div id="screen-creation" class="screen active">
-      <h2 class="creation-title">Definí tu identidad</h2>
+            <div class="cards-grid">
+                <!-- Modo 1: Simulación (ACTIVO) -->
+                <div class="card-modo active" id="card-simulacion">
+                    <div class="card-tag">Disponible</div>
+                    <h2>Simulación Rápida</h2>
+                    <p>Viví partidos rápidos estilo Copero con resultados instantáneos y control total de eventos.</p>
+                    <button id="btn-modo-simulacion" class="btn-primary">Comenzar Simulación</button>
+                </div>
 
-      <div class="creation-grid">
-        
-        <!-- COLUMNA 1: IDENTIDAD -->
-        <div>
-          <div class="column-title">Identidad</div>
-          <div class="jersey-container">
-            <svg class="jersey-svg" viewBox="0 0 100 100">
-              <path d="M 30,15 L 15,25 L 22,40 L 30,32 L 30,85 L 70,85 L 70,32 L 78,40 L 85,25 L 70,15 Z" fill="#ffffff" id="jersey-base"/>
-              <path d="M 30,15 L 15,25 L 22,40 L 30,32 Z" fill="#111111"/>
-              <path d="M 70,15 L 85,25 L 78,40 L 70,32 Z" fill="#111111"/>
-              <path d="M 40,15 C 45,20 55,20 60,15 Z" fill="#111111"/>
-              <text x="50" y="48" font-size="7" font-weight="bold" text-anchor="middle" fill="#000000" id="svg-name">APELLIDO</text>
-              <text x="50" y="70" font-size="20" font-weight="900" text-anchor="middle" fill="#000000" id="svg-number">10</text>
-            </svg>
-          </div>
+                <!-- Modo 2: Carrera de Jugador (Próximamente) -->
+                <div class="card-modo disabled">
+                    <div class="card-tag muted">Próximamente</div>
+                    <h2>Carrera de Jugador</h2>
+                    <p>Creá tu ficha, controlá tus atributos y jugá partidos clave en 2D estilo Haxball.</p>
+                    <button class="btn-disabled" disabled>Bloqueado</button>
+                </div>
 
-          <div class="inputs-row">
-            <div class="input-field">
-              <label>Apellido</label>
-              <input type="text" id="input-name" value="APELLIDO" maxlength="10" oninput="updateJersey()">
+                <!-- Modo 3: Carrera de Manager (Próximamente) -->
+                <div class="card-modo disabled">
+                    <div class="card-tag muted">Próximamente</div>
+                    <h2>Carrera de Manager</h2>
+                    <p>Dirigí al club de tus amores, gestioná alineaciones y conquistá la liga local.</p>
+                    <button class="btn-disabled" disabled>Bloqueado</button>
+                </div>
             </div>
-            <div class="input-field">
-              <label>Número</label>
-              <input type="number" id="input-number" value="10" min="1" max="99" oninput="updateJersey()">
-            </div>
-          </div>
+        </section>
 
-          <div class="input-field">
-            <label style="margin-bottom: 5px;">Pierna Hábil</label>
-            <div class="foot-selector">
-              <button class="btn-foot" onclick="selectFoot('Izquierda', this)">Izquierda</button>
-              <button class="btn-foot active" onclick="selectFoot('Derecha', this)">Derecha</button>
+        <!-- ZONA 2: Pantalla de Modo Simulación (Lienzo Vacío por ahora) -->
+        <section id="pantalla-simulacion" class="screen hidden">
+            <button id="btn-volver-menu" class="btn-secondary">← Volver al Menú</button>
+            <div class="placeholder-content">
+                <h2>Modo Simulación Rápida</h2>
+                <p>Aquí construiremos la interfaz y lógica de este modo.</p>
             </div>
-          </div>
-        </div>
-
-        <!-- COLUMNA 2: NACIONALIDAD -->
-        <div>
-          <div class="column-title">Nacionalidad</div>
-          <div class="search-box">
-            <input type="text" id="search-country" placeholder="Buscar país..." oninput="filterCountries()">
-          </div>
-          <div class="country-grid" id="countries-list">
-            <!-- Cargado dinámicamente -->
-          </div>
-        </div>
-
-        <!-- COLUMNA 3: POSICIÓN -->
-        <div>
-          <div class="column-title">Posición</div>
-          <div class="tactical-pitch">
-            <div class="pitch-line-center"></div>
-            <div class="pitch-circle"></div>
-
-            <!-- Delanteros -->
-            <div class="pitch-row">
-              <button class="pos-node" onclick="selectPos('EI', this)">EI</button>
-              <button class="pos-node active" onclick="selectPos('DC', this)">DC</button>
-              <button class="pos-node" onclick="selectPos('ED', this)">ED</button>
-            </div>
-            <!-- Mediocampistas -->
-            <div class="pitch-row">
-              <button class="pos-node" onclick="selectPos('MCO', this)">MCO</button>
-            </div>
-            <div class="pitch-row">
-              <button class="pos-node" onclick="selectPos('MI', this)">MI</button>
-              <button class="pos-node" onclick="selectPos('MC', this)">MC</button>
-              <button class="pos-node" onclick="selectPos('MD', this)">MD</button>
-            </div>
-            <div class="pitch-row">
-              <button class="pos-node" onclick="selectPos('MCD', this)">MCD</button>
-            </div>
-            <!-- Defensores -->
-            <div class="pitch-row">
-              <button class="pos-node" onclick="selectPos('LI', this)">LI</button>
-              <button class="pos-node" onclick="selectPos('DFC', this)">DFC</button>
-              <button class="pos-node" onclick="selectPos('LD', this)">LD</button>
-            </div>
-            <!-- Arquero -->
-            <div class="pitch-row">
-              <button class="pos-node" onclick="selectPos('POR', this)">POR</button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- BOTONES INFERIORES -->
-      <div class="action-bar">
-        <button class="btn btn-back">Volver</button>
-        <button class="btn btn-confirm" onclick="startMatch()">Confirmar identidad</button>
-      </div>
+        </section>
     </div>
 
-    <!-- PANTALLA 2: CANCHA Y PARTIDO 2D -->
-    <div id="screen-match" class="screen">
-      <div class="match-header">
-        <div class="team-badge" id="team-home">
-          <span id="match-flag"></span>
-          <span id="match-country-name">MI PAÍS</span>
-          <span>(</span><span>0</span><span>)</span>
-        </div>
-        <div class="score">
-          <span id="match-timer">02:00</span>
-        </div>
-        <div class="team-badge" id="team-away">
-          <span>VISITANTE</span>
-          <span>(</span><span>0</span><span>)</span>
-        </div>
-      </div>
-
-      <!-- CANVAS CON SU ID Y TAMAÑO EXACTO -->
-      <div id="canvas-container">
-        <canvas id="footballPitch" width="900" height="550"></canvas>
-      </div>
-
-      <div class="action-bar">
-        <button class="btn btn-back" onclick="exitMatch()">Abandonar Partido</button>
-      </div>
-    </div>
-
-  </div>
-
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="../static/js/script.js"></script>
 </body>
 </html>
